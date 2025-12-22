@@ -1,0 +1,18 @@
+# ============================================================================
+# Macro pour simulation batch - Dose dans l'eau
+# ============================================================================
+
+# Initialisation
+/run/initialize
+
+# Verbosité réduite pour simulation rapide
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+# ============================================================================
+# LANCER LA SIMULATION
+# ============================================================================
+# Nombre d'événements (désintégrations Eu-152)
+# Recommandé : 1000000 pour bonne statistique
+/run/beamOn 1000000

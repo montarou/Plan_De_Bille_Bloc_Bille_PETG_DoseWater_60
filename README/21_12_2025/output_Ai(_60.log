@@ -1,0 +1,2517 @@
+
+╔═══════════════════════════════════════════════════════════════╗
+║         SIMULATION GEANT4 - DOSE DANS L'EAU                   ║
+║                                                               ║
+║  Source     : Eu-152 (44 kBq)                                 ║
+║  Détecteur  : Sphère d'EAU (r = 2.0 cm) à z = 20 cm           ║
+║  Objectif   : Mesure de la dose absorbée (tissu mou)          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+**************************************************************
+ Geant4 version Name: geant4-11-03-patch-01 [MT]   (21-March-2025)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+<<< Geant4 Physics List simulation engine: FTFP_BERT
+
+G4VModularPhysicsList::ReplacePhysics: G4EmStandard with type : 2 is replaced with G4EmLivermore
+G4VModularPhysicsList::RegisterPhysics: a physics with given type already exists 
+ Type = 4 :   existing physics is Decay
+ New Decay can not be registered 
+
+-------- WWWW ------- G4Exception-START -------- WWWW -------
+*** G4Exception : Run0202
+      issued by : G4VModularPhysicsList::RegisterPhysics
+Duplicate type for Decay
+*** This is just a warning message. ***
+-------- WWWW -------- G4Exception-END --------- WWWW -------
+
+
+========== PHYSIQUE ==========
+Liste de physique : FTFP_BERT
+EM Physics : Livermore (optimisée basse énergie)
+  - Photoélectrique avec couches atomiques
+  - Compton avec fonction de diffusion
+  - Diffusion Rayleigh
+  - Production de paires
+  - Bremsstrahlung
+  - Ionisation
+Step Limiter : activé (pour UserLimits)
+==============================
+
+
+╔═══════════════════════════════════════════===════════╗
+║        SPECTRE GAMMA EUROPIUM-152 (Eu-152)             ║
+╠══════════════════════════════════════════════===═==════╣
+║  Énergie (keV)  │  Intensité (%)  │Prob.d'émission     ║
+╠═════════════════╪═════════════════╪════════════======══╣
+║      40.12      │       37.7      │         0.3770            ║
+║      39.52      │       20.8      │         0.2080            ║
+║     121.78      │       28.5      │         0.2850            ║
+║     244.70      │        7.6      │         0.0760            ║
+║     344.28      │       26.5      │         0.2650            ║
+║     411.12      │        2.2      │         0.0220            ║
+║     443.96      │        2.8      │         0.0280            ║
+║     778.90      │       12.9      │         0.1290            ║
+║     867.38      │        4.2      │         0.0420            ║
+║     964.08      │       14.6      │         0.1460            ║
+║    1112.07      │       13.6      │         0.1360            ║
+║    1408.01      │       21.0      │         0.2100            ║
+╠════════════════════════════════════════════════════════════════=============╣
+║  Intensité totale : 192.4 %                              ║
+║  Nombre moyen de gammas/désintégration : 1.924     ║
+╠══════════════════════════════════════════════════════════════=============══╣
+║  MÉTHODE : Pour chaque raie, tirage indépendant avec sa                     ║
+║            probabilité propre. Permet 0, 1, 2, ... gammas                   ║
+║            par désintégration (événement).                                  ║
+╚═════════════════════════════════════════════════════════════=============═══╝
+
+
+╔════════════════════════════════════════════════════════════╗
+║  RunAction initialized with 
+║  Output file: dose_water_output.root
+║  Detector material: WATER (tissue equivalent)
+╠════════════════════════════════════════════════════════════╣
+║  *** NORMALISATION ***                                     ║
+║  Temps simulé : t = N_events / A_4π                        ║
+║  Facteur correction : f_cone = 0.25 (cône 60°)
+║  Dose corrigée = Dose_brute × f_cone                       ║
+╚════════════════════════════════════════════════════════════╝
+
+Visualization Manager instantiating with verbosity "warnings (3)"...
+Visualization Manager initialising...
+Registering graphics systems...
+
+You have successfully registered the following graphics systems.
+Registered graphics systems are:
+  ASCIITree (ATree)
+  DAWNFILE (DAWNFILE)
+  G4HepRepFile (HepRepFile)
+  RayTracer (RayTracer)
+  VRML2FILE (VRML2FILE)
+  gMocrenFile (gMocrenFile)
+  TOOLSSG_OFFSCREEN (TSG_OFFSCREEN, TSG_FILE)
+  OpenGLImmediateQt (OGLIQt, OGLI)
+  OpenGLStoredQt (OGLSQt, OGL, OGLS)
+  OpenGLImmediateX (OGLIX, OGLIQt_FALLBACK)
+  OpenGLStoredX (OGLSX, OGLSQt_FALLBACK)
+  TOOLSSG_X11_GLES (TSG_X11_GLES, TSGX11, TSG_QT_GLES_FALLBACK)
+  TOOLSSG_X11_ZB (TSG_X11_ZB, TSGX11ZB)
+  TOOLSSG_QT_GLES (TSG_QT_GLES, TSGQt, TSG)
+  TOOLSSG_QT_ZB (TSG_QT_ZB, TSGQtZB)
+You may choose a graphics system (driver) with a parameter of
+the command "/vis/open" or "/vis/sceneHandler/create",
+or you may omit the driver parameter and choose at run time:
+- by argument in the construction of G4VisExecutive;
+- by environment variable "G4VIS_DEFAULT_DRIVER";
+- by entry in "~/.g4session";
+- by build flags.
+- Note: This feature is not allowed in batch mode.
+For further information see "examples/basic/B1/exampleB1.cc"
+and "vis.mac".
+
+Registering model factories...
+
+You have successfully registered the following model factories.
+Registered model factories:
+  generic
+  drawByAttribute
+  drawByCharge
+  drawByOriginVolume
+  drawByParticleID
+  drawByEncounteredVolume
+
+Registered models:
+  None
+
+Registered filter factories:
+  attributeFilter
+  chargeFilter
+  originVolumeFilter
+  particleFilter
+  encounteredVolumeFilter
+
+Registered filters:
+  None
+
+You have successfully registered the following user vis actions.
+Run Duration User Vis Actions: none
+End of Event User Vis Actions: none
+End of Run User Vis Actions: none
+
+Some /vis commands (optionally) take a string to specify colour.
+"/vis/list" to see available colours.
+
+=== Proprietes des Materiaux ===
+W/PETG 75%/25%:
+  W density      = 19.3 g/cm3 
+  PETG density   = 1.27 g/cm3 
+  Mix density    = 4.24249 g/cm3 
+Bismuth (billes):
+  Bi density     = 9.747 g/cm3 
+================================
+
+Checking overlaps for volume Enveloppe:0 (G4Box) ... OK! 
+Checking overlaps for volume PlaqueWPETG:0 (G4SubtractionSolid) ... OK! 
+Checking overlaps for volume CaviteAir:0 (G4Box) ... OK! 
+
++===========================================================+
+|      EMPILEMENT DE 5 PLANS DE BILLES DE BISMUTH           |
++===========================================================+
+|  Diametre billes : 2 mm
+|  Container       : 50 x 50 mm2
+|  Materiau        : G4_AIR
++-----------------------------------------------------------+
+|  Plan 1 (Type A) :  686 billes, z = -3.266 mm (relatif)
+|  Plan 2 (Type B) :  672 billes, z = -1.633 mm (relatif)
+|  Plan 3 (Type A) :  686 billes, z = 0.000 mm (relatif)
+|  Plan 4 (Type B) :  672 billes, z = 1.633 mm (relatif)
+|  Plan 5 (Type A) :  686 billes, z = 3.266 mm (relatif)
++===========================================================+
+|  TOTAL           : 3402 billes
+|  Epaisseur       : 8.532 mm
++===========================================================+
+
+Checking overlaps for volume DoseDetector:0 (G4Orb) ... OK! 
+
++=====================================================================+
+|      PROGRAMME : MESURE DE DOSE DANS L'EAU                          |
+|      (Version PLAQUE W/PETG + BILLES DE BISMUTH)                    |
+|      >>> DISTANCE SOURCE-DETECTEUR = 18 cm <<<                      |
++=====================================================================+
+|                                                                     |
+| STRUCTURE :                                                         |
+| +-------------------------------------------------------------------+
+| |                      PLAQUE W/PETG 18 mm                          |
+| |  +-----------------------------------------------------+          |
+| |  |     CAVITE D'AIR avec BILLES DE BISMUTH             |          |
+| |  |     (50x50 mm, 8.53 mm hauteur)                    |          |
+| |  |     3402 billes de 2.00 mm (5 plans HCP)            |          |
+| |  +-----------------------------------------------------+          |
+| +-------------------------------------------------------------------+
+|                                                                     |
++---------------------------------------------------------------------+
+| POSITIONS SUR L'AXE Z :                                             |
+| * Source             : z = 2.00 cm                                 |
+| * Face avant plaque  : z = 3.75 cm                              |
+| * Centre plaque      : z = 4.65 cm                              |
+| * Face arriere plaque: z = 5.55 cm                              |
+| * Centre detecteur   : z = 20.00 cm                                |
+|                                                                     |
++---------------------------------------------------------------------+
+| DISTANCES :                                                         |
+| * Source -> Detecteur    : 18.00 cm                              |
+| * Plaque -> Detecteur    : 14.45 cm                            |
+|                                                                     |
++---------------------------------------------------------------------+
+| PLAQUE W/PETG :                                                     |
+| * Dimensions X x Y   : 10.00 x 10.00 cm                            |
+| * Epaisseur totale   : 18.00 mm                                     |
+| * Densite W/PETG     : 4.24 g/cm3                         |
+| * Masse W/PETG       : 673.16 g                               |
+| * Masse surf. W/PETG : 6.73 g/cm2                          |
+|                                                                     |
++---------------------------------------------------------------------+
+| CAVITE ET BILLES :                                                  |
+| * Dimensions cavite  : 50.00 x 50.00 x 8.53 mm3                  |
+| * Nombre de billes   : 3402                                        |
+| * Diametre billes    : 2.00 mm                                       |
+| * Materiau billes    : Bismuth (Z=83)                               |
+| * Densite Bi         : 9.75 g/cm3                            |
+| * Masse billes       : 138.90 g                                |
+| * Masse surf. billes : 1.39 g/cm2                           |
+|                                                                     |
++---------------------------------------------------------------------+
+| TOTAL :                                                             |
+| * Masse totale       : 812.05 g                               |
+| * Masse surfacique   : 8.12 g/cm2                          |
+|                                                                     |
++---------------------------------------------------------------------+
+| PLANS DE COMPTAGE :                                                 |
+| * Upstream           : z = 3.45 cm                             |
+| * Downstream         : z = 5.85 cm                             |
+|                                                                     |
++---------------------------------------------------------------------+
+| DETECTEUR DOSE DANS L'EAU :                                         |
+| * Position centre    : z = 20.00 cm                               |
+| * Distance source    : 18.00 cm                               |
+| * Rayon              : 2.00 cm                                     |
+| * Masse              : 33.51 g                                  |
+|                                                                     |
++=====================================================================+
+
+
+ hInelastic FTFP_BERT : threshold between BERT and FTFP is over the interval 
+ for pions :   3.00 to 6.00 GeV
+ for kaons :   3.00 to 6.00 GeV
+ for proton :  3.00 to 6.00 GeV
+ for neutron : 3.00 to 6.00 GeV
+
+### Adding tracking cuts for neutron  TimeCut(ns)= 10000.00  KinEnergyCut(MeV)= 0.00
+
+========== CUTS DE PRODUCTION ==========
+Gamma : 0.1 mm
+e-    : 0.1 mm
+e+    : 0.1 mm
+Proton: 0.1 mm
+========================================
+
+=======================================================================
+======                 Electromagnetic Physics Parameters      ========
+=======================================================================
+LPM effect enabled                                 1
+Enable creation and use of sampling tables         0
+Apply cuts on all EM processes                     0
+Use combined TransportationWithMsc                 Disabled
+Use general process                                0
+Enable linear polarisation for gamma               0
+Enable photoeffect sampling below K-shell          1
+Enable sampling of quantum entanglement            0
+X-section factor for integral approach             0.80000
+Min kinetic energy for tables                      100.00000 eV 
+Max kinetic energy for tables                      100.00000 TeV
+Number of bins per decade of a table               20
+Verbose level                                      1
+Verbose level for worker thread                    0
+Bremsstrahlung energy threshold above which 
+  primary e+- is added to the list of secondary    100.00000 TeV
+Bremsstrahlung energy threshold above which primary
+  muon/hadron is added to the list of secondary    100.00000 TeV
+Positron annihilation at rest model                AllisonPositronium
+Enable 3 gamma annihilation on fly                 0
+Lowest triplet kinetic energy                      1.00000 MeV
+Enable sampling of gamma linear polarisation       0
+5D gamma conversion model type                     0
+5D gamma conversion model on isolated ion          0
+Use Ricardo-Gerardo pair production model          0
+Livermore data directory                           epics_2017
+=======================================================================
+======                 Ionisation Parameters                   ========
+=======================================================================
+Step function for e+-                              (0.20000, 0.01000 mm)
+Step function for muons/hadrons                    (0.10000, 0.05000 mm)
+Step function for light ions                       (0.10000, 0.02000 mm)
+Step function for general ions                     (0.10000, 0.00100 mm)
+Lowest e+e- kinetic energy                         100.00000 eV 
+Lowest muon/hadron kinetic energy                  1.00000 keV
+Use ICRU90 data                                    1
+Fluctuations of dE/dx are enabled                  1
+Type of fluctuation model for leptons and hadrons  Urban
+Use built-in Birks satuaration                     0
+Build CSDA range enabled                           0
+Use cut as a final range enabled                   0
+Enable angular generator interface                 1
+Max kinetic energy for CSDA tables                 1.00000 GeV
+Max kinetic energy for NIEL computation            1.00000 MeV
+Linear loss limit                                  0.01000
+Read data from file for e+e- pair production by mu 0
+=======================================================================
+======                 Multiple Scattering Parameters          ========
+=======================================================================
+Type of msc step limit algorithm for e+-           2
+Type of msc step limit algorithm for muons/hadrons 0
+Msc lateral displacement for e+- enabled           1
+Msc lateral displacement for muons and hadrons     1
+Urban msc model lateral displacement alg96         1
+Range factor for msc step limit for e+-            0.08000
+Range factor for msc step limit for muons/hadrons  0.20000
+Geometry factor for msc step limitation of e+-     2.50000
+Safety factor for msc step limit for e+-           0.60000
+Skin parameter for msc step limitation of e+-      3.00000
+Lambda limit for msc step limit for e+-            1.00000 mm
+Use Mott correction for e- scattering              1
+Factor used for dynamic computation of angular 
+  limit between single and multiple scattering     1.00000
+Fixed angular limit between single 
+  and multiple scattering                          3.14159 rad
+Upper energy limit for e+- multiple scattering     100.00000 MeV
+Type of electron single scattering model           0
+Type of nuclear form-factor                        1
+Screening factor                                   1.00000
+=======================================================================
+======                 Atomic Deexcitation Parameters          ========
+=======================================================================
+Fluorescence enabled                               1
+Directory in G4LEDATA for fluorescence data files  fluor
+Auger electron cascade enabled                     0
+PIXE atomic de-excitation enabled                  0
+De-excitation module ignores cuts                  0
+Type of PIXE cross section for hadrons             Empirical
+Type of PIXE cross section for e+-                 Livermore
+=======================================================================
+
+### ===  Deexcitation model UAtomDeexcitation is activated for 1 region:
+          DefaultRegionForTheWorld  1  0  0
+### ===  Ignore cuts flag:   0
+
+phot:  for gamma SubType=12 BuildTable=0
+      LambdaPrime table from 200.000000 keV to 100.000000 TeV in 174 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+ LivermorePhElectric : Emin=0.000000 eV  Emax=100.000000 TeV  SauterGavrila Fluo
+
+compt:  for gamma SubType=13 BuildTable=1
+      Lambda table from 100.000000 eV  to 1.000000 MeV, 20 bins/decade, spline: 1
+      LambdaPrime table from 1.000000 MeV to 100.000000 TeV in 160 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+    LivermoreCompton : Emin=0.000000 eV  Emax=1.000000 GeV Fluo
+        KleinNishina : Emin=1.000000 GeV Emax=100.000000 TeV Fluo
+
+conv:  for gamma SubType=14 BuildTable=1
+      Lambda table from 1.021998 MeV to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+Livermore5DConversion : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedTsai
+
+Rayl:  for gamma SubType=11 BuildTable=1
+      Lambda table from 100.000000 eV  to 150.000000 keV, 20 bins/decade, spline: 0
+      LambdaPrime table from 150.000000 keV to 100.000000 TeV in 176 bins 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   LivermoreRayleigh : Emin=0.000000 eV  Emax=100.000000 TeV  CullenGenerator
+
+msc:  for e-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  GoudsmitSaunderson : Emin=0.000000 eV  Emax=100.000000 MeV Nbins=120 100.000000 eV  - 100.000000 MeV
+          StepLim=SafetyPlus Rfact=0.080000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+        WentzelVIUni : Emin=100.000000 MeV Emax=100.000000 TeV Nbins=120 100.000000 MeV - 100.000000 TeV
+          StepLim=SafetyPlus Rfact=0.080000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+eIoni:  for e-  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.200000, 0.010000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+       LowEnergyIoni : Emin=0.000000 eV  Emax=100.000000 keV  deltaVI
+        MollerBhabha : Emin=100.000000 keV Emax=100.000000 TeV  deltaVI
+
+eBrem:  for e-  XStype:4  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 1.000000 GeV,  VertexHighEnergyTh(GeV)= 100000.000000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=0.000000 eV  Emax=1.000000 GeV  AngularGen2BS
+            eBremLPM : Emin=1.000000 GeV Emax=100.000000 TeV  AngularGen2BS
+
+ePairProd:  for e-  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 0
+      Sampling table 25x1001; from 0.100000 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           ePairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for e- XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100.000000 MeV to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=100.000000 MeV Emax=100.000000 TeV
+
+msc:  for e+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  GoudsmitSaunderson : Emin=0.000000 eV  Emax=100.000000 MeV Nbins=120 100.000000 eV  - 100.000000 MeV
+          StepLim=SafetyPlus Rfact=0.080000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+        WentzelVIUni : Emin=100.000000 MeV Emax=100.000000 TeV Nbins=120 100.000000 MeV - 100.000000 TeV
+          StepLim=SafetyPlus Rfact=0.080000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+eIoni:  for e+  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.200000, 0.010000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        MollerBhabha : Emin=0.000000 eV  Emax=100.000000 TeV  deltaVI
+
+eBrem:  for e+  XStype:4  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      LPM flag: 1 for E > 1.000000 GeV,  VertexHighEnergyTh(GeV)= 100000.000000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+             eBremSB : Emin=0.000000 eV  Emax=1.000000 GeV  AngularGen2BS
+            eBremLPM : Emin=1.000000 GeV Emax=100.000000 TeV  AngularGen2BS
+
+ePairProd:  for e+  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 0
+      Sampling table 25x1001; from 0.100000 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           ePairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+annihil:  for e+ XStype:2 SubType=5 AtRestModel:Allison BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            eplus2gg : Emin=0.000000 eV  Emax=100.000000 TeV
+
+CoulombScat:  for e+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from 100.000000 MeV to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=100.000000 MeV Emax=100.000000 TeV
+
+msc:  for proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for proton  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=0.000000 eV  Emax=2.000000 MeV  deltaVI
+          BetheBloch : Emin=2.000000 MeV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for proton  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for proton  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.506176 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+nuclearStopping:  for proton SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=0.000000 eV  Emax=1.000000 MeV
+
+msc:  for GenericIon  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=0.000000 eV  Emax=100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+ionIoni:  for GenericIon  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.001000 mm), integ: 3, fluct: 1, linLossLim= 0.020000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+    LindhardSorensen : Emin=0.000000 eV  Emax=100.000000 TeV  deltaVI
+
+nuclearStopping:  for GenericIon SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=0.000000 eV  Emax=1.000000 MeV
+
+msc:  for alpha  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            UrbanMsc : Emin=0.000000 eV  Emax=100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+ionIoni:  for alpha  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.020000 mm), integ: 3, fluct: 1, linLossLim= 0.020000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            BraggIon : Emin=0.000000 eV  Emax=7.945199 MeV  deltaVI
+          BetheBloch : Emin=7.945199 MeV Emax=100.000000 TeV  deltaVI
+
+nuclearStopping:  for alpha SubType=8 BuildTable=0
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+   ICRU49NucStopping : Emin=0.000000 eV  Emax=1.000000 MeV
+
+msc:  for anti_proton  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for anti_proton  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=0.000000 eV  Emax=2.000000 MeV  deltaVI
+          BetheBloch : Emin=2.000000 MeV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for anti_proton  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for anti_proton  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 17x1001; from 7.506176 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for anti_proton XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for kaon+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for kaon+  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=0.000000 eV  Emax=1.052311 MeV  deltaVI
+          BetheBloch : Emin=1.052311 MeV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for kaon+  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for kaon+  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.949416 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for kaon+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for kaon-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for kaon-  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=0.000000 eV  Emax=1.052311 MeV  deltaVI
+          BetheBloch : Emin=1.052311 MeV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for kaon-  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for kaon-  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 18x1001; from 3.949416 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for kaon- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of kaon+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for mu+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+muIoni:  for mu+  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=0.000000 eV  Emax=200.000000 keV  deltaVI
+        MuBetheBloch : Emin=200.000000 keV Emax=100.000000 TeV  deltaVI
+
+muBrems:  for mu+  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+muPairProd:  for mu+  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.850000 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for mu+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for mu-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+muIoni:  for mu-  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=0.000000 eV  Emax=200.000000 keV  deltaVI
+        MuBetheBloch : Emin=200.000000 keV Emax=100.000000 TeV  deltaVI
+
+muBrems:  for mu-  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+              MuBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+muPairProd:  for mu-  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 21x1001; from 0.850000 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+          muPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for mu- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of mu+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for pi+  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for pi+  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               Bragg : Emin=0.000000 eV  Emax=297.504557 keV  deltaVI
+          BetheBloch : Emin=297.504557 keV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for pi+  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for pi+  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.116561 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for pi+ XStype:1 SubType=1 BuildTable=1
+      Lambda table from threshold  to 100.000000 TeV, 20 bins/decade, spline: 0
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+msc:  for pi-  SubType= 10
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+        WentzelVIUni : Emin=0.000000 eV  Emax=100.000000 TeV Nbins=240 100.000000 eV  - 100.000000 TeV
+          StepLim=Minimal Rfact=0.200000 Gfact=2.500000 Sfact=0.600000 DispFlag:1 Skin=3.000000 Llim=1.000000 mm
+
+hIoni:  for pi-  XStype:3  SubType=2
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      StepFunction=(0.100000, 0.050000 mm), integ: 3, fluct: 1, linLossLim= 0.010000
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+            ICRU73QO : Emin=0.000000 eV  Emax=297.504557 keV  deltaVI
+          BetheBloch : Emin=297.504557 keV Emax=100.000000 TeV  deltaVI
+
+hBrems:  for pi-  XStype:1  SubType=3
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+               hBrem : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+hPairProd:  for pi-  XStype:1  SubType=4
+      dE/dx and range tables from 100.000000 eV  to 100.000000 TeV in 240 bins
+      Lambda tables from threshold to 100.000000 TeV, 20 bins/decade, spline: 1
+      Sampling table 20x1001; from 1.116561 GeV to 100.000000 TeV 
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+           hPairProd : Emin=0.000000 eV  Emax=100.000000 TeV  ModifiedMephi
+
+CoulombScat:  for pi- XStype:1 SubType=1 BuildTable=1
+      Used Lambda table of pi+
+      ThetaMin(p) < Theta(degree) < 180, pLimit(GeV^1)= 0.139531
+      ===== EM models for the G4Region  DefaultRegionForTheWorld ======
+  eCoulombScattering : Emin=0.000000 eV  Emax=100.000000 TeV
+
+====================================================================
+                  HADRONIC PROCESSES SUMMARY (verbose level 1)
+-----------------------------------------------------------------------
+                           Hadronic Processes for neutron
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:        G4NeutronElasticXS: 0.000000 eV  ---> 100.000000 TeV
+  Process: neutronInelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:      G4NeutronInelasticXS: 0.000000 eV  ---> 100.000000 TeV
+  Process: nCapture
+        Model:               nRadCapture: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:        G4NeutronCaptureXS: 0.000000 eV  ---> 100.000000 TeV
+  Process: nKiller
+-----------------------------------------------------------------------
+                           Hadronic Processes for B-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: B-Inelastic
+        Model:                      FTFP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for D-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: D-Inelastic
+        Model:                      FTFP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for GenericIon
+  Process: ionInelastic
+        Model:  Binary Light Ion Cascade: 0.000000 eV /n ---> 6.000000 GeV/n
+        Model:                      FTFP: 3.000000 GeV/n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for He3
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+  Process: He3Inelastic
+        Model:  Binary Light Ion Cascade: 0.000000 eV /n ---> 6.000000 GeV/n
+        Model:                      FTFP: 3.000000 GeV/n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for alpha
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+  Process: alphaInelastic
+        Model:  Binary Light Ion Cascade: 0.000000 eV /n ---> 6.000000 GeV/n
+        Model:                      FTFP: 3.000000 GeV/n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_He3
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.100000 MeV/n
+        Model:              AntiAElastic: 100.000000 MeV/n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_He3Inelastic
+        Model:                      FTFP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_alpha
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.100000 MeV/n
+        Model:              AntiAElastic: 100.000000 MeV/n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_alphaInelastic
+        Model:                      FTFP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_deuteron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.100000 MeV/n
+        Model:              AntiAElastic: 100.000000 MeV/n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_deuteronInelastic
+        Model:                      FTFP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-------------------------------------------------------------------------
+                           Hadronic Processes for anti_hypertriton
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_lambda
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: anti_lambdaInelastic
+        Model:                      FTFP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_neutron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.100000 MeV
+        Model:              AntiAElastic: 100.000000 MeV ---> 100.000000 TeV
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_neutronInelastic
+        Model:                      FTFP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_proton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.100000 MeV
+        Model:              AntiAElastic: 100.000000 MeV ---> 100.000000 TeV
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_protonInelastic
+        Model:                      FTFP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for anti_triton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.100000 MeV/n
+        Model:              AntiAElastic: 100.000000 MeV/n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: anti_tritonInelastic
+        Model:                      FTFP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:              AntiAGlauber: 0.000000 eV  ---> 25.600000 PeV
+  Process: hFritiofCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for deuteron
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+  Process: dInelastic
+        Model:  Binary Light Ion Cascade: 0.000000 eV /n ---> 6.000000 GeV/n
+        Model:                      FTFP: 3.000000 GeV/n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for e+
+  Process: positronNuclear
+        Model:   G4ElectroVDNuclearModel: 0.000000 eV  ---> 1.000000 PeV
+     Cr_sctns:          ElectroNuclearXS: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for e-
+  Process: electronNuclear
+        Model:   G4ElectroVDNuclearModel: 0.000000 eV  ---> 1.000000 PeV
+     Cr_sctns:          ElectroNuclearXS: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for gamma
+  Process: photonNuclear
+        Model:               GammaNPreco: 0.000000 eV  ---> 200.000000 MeV
+        Model:            BertiniCascade: 199.000000 MeV ---> 6.000000 GeV
+        Model:           TheoFSGenerator: 3.000000 GeV ---> 100.000000 TeV
+     Cr_sctns:            GammaNuclearXS: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for kaon+
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: kaon+Inelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for kaon-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: kaon-Inelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for lambda
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: lambdaInelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for mu+
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0.000000 eV  ---> 1.000000 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for mu-
+  Process: muonNuclear
+        Model:      G4MuonVDNuclearModel: 0.000000 eV  ---> 1.000000 PeV
+     Cr_sctns:     KokoulinMuonNuclearXS: 0.000000 eV  ---> 100.000000 TeV
+  Process: muMinusCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for pi+
+  Process: hadElastic
+        Model:           hElasticGlauber: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: pi+Inelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for pi-
+  Process: hadElastic
+        Model:           hElasticGlauber: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: pi-Inelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for proton
+  Process: hadElastic
+        Model:             hElasticCHIPS: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: protonInelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:  BarashenkovGlauberGribov: 0.000000 eV  ---> 100.000000 TeV
+-----------------------------------------------------------------------
+                           Hadronic Processes for sigma-
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV  ---> 100.000000 TeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: sigma-Inelastic
+        Model:                      FTFP: 3.000000 GeV ---> 100.000000 TeV
+        Model:            BertiniCascade: 0.000000 eV  ---> 6.000000 GeV
+     Cr_sctns:            Glauber-Gribov: 0.000000 eV  ---> 100.000000 TeV
+  Process: hBertiniCaptureAtRest
+-----------------------------------------------------------------------
+                           Hadronic Processes for triton
+  Process: hadElastic
+        Model:              hElasticLHEP: 0.000000 eV /n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+  Process: tInelastic
+        Model:  Binary Light Ion Cascade: 0.000000 eV /n ---> 6.000000 GeV/n
+        Model:                      FTFP: 3.000000 GeV/n ---> 100.000000 TeV/n
+     Cr_sctns:  Glauber-Gribov Nucl-nucl: 0.000000 eV  ---> 25.600000 PeV
+=======================================================================
+======       Geant4 Native Pre-compound Model Parameters       ========
+=======================================================================
+Type of pre-compound inverse x-section              1
+Pre-compound model active                           1
+Pre-compound excitation low energy                  100.00000 keV
+Pre-compound excitation high energy                 30.00000 MeV
+Angular generator for pre-compound model            1
+Use NeverGoBack option for pre-compound model       0
+Use SoftCutOff option for pre-compound model        0
+Use CEM transitions for pre-compound model          1
+Use GNASH transitions for pre-compound model        0
+Use HETC submodel for pre-compound model            0
+=======================================================================
+======       Nuclear De-excitation Module Parameters           ========
+=======================================================================
+Type of de-excitation inverse x-section             3
+Type of de-excitation factory                       Evaporation+GEM
+Number of de-excitation channels                    68
+Min excitation energy                               10.00000 eV 
+Min energy per nucleon for multifragmentation       200.00000 GeV
+Limit excitation energy for Fermi BreakUp           20.00000 MeV
+Level density (1/MeV)                               0.07500
+Use simple level density model                      1
+Use discrete excitation energy of the residual      0
+Time limit for long lived isomeres                  1.00000 ns 
+Isomer production flag                              1
+Internal e- conversion flag                         1
+Store e- internal conversion data                   1
+Correlated gamma emission flag                      0
+Max 2J for sampling of angular correlations         10
+=======================================================================
+### Run 0 start.
+
+-------- WWWW ------- G4Exception-START -------- WWWW -------
+*** G4Exception : Analysis_W001
+      issued by : G4RootNtupleFileManager::SetNtupleMergingMode
+Merging ntuples is not applicable in sequential application.
+Setting was ignored.
+*** This is just a warning message. ***
+-------- WWWW -------- G4Exception-END --------- WWWW -------
+
+... set ntuple merging row mode : row-wise - done
+... create file : dose_water_output.root - done
+... open analysis file : dose_water_output.root - done
+... open analysis file : dose_water_output.root - done
+
+╔════════════════════════════════════════════════════════════╗
+║  HISTOGRAMMES ET NTUPLES CRÉÉS                             ║
+╠════════════════════════════════════════════════════════════╣
+║  H1[0] : nGammasPerEvent      - Distribution N_gamma       ║
+║  H1[1] : energySpectrum       - Spectre des énergies       ║
+║  H1[2] : totalEnergyPerEvent  - Énergie totale/event       ║
+║  H1[3] : nTransmittedPerEvent - N transmis/event           ║
+║  H1[4] : nAbsorbedPerEvent    - N absorbés/event           ║
+║  H1[5] : dosePerEvent         - Dépôt dose/event           ║
+║  H2[0] : nGammas_vs_totalEnergy - Corrélation 2D           ║
+╠════════════════════════════════════════════════════════════╣
+║  Ntuple[0] : EventData  - 1 entrée par événement           ║
+║  Ntuple[1] : GammaData  - 1 entrée par gamma primaire      ║
+╚════════════════════════════════════════════════════════════╝
+
+PrimaryGenerator | Event 0 : 1 gamma(s) generated [344.280000 keV]
+BeginOfEvent 0 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 0 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 344.280000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 1 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 1 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 1 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 2 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 2 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 2 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 3 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 3 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 3 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 4 : 6 gamma(s) generated [40.120000 keV, 39.520000 keV, 344.280000 keV, 778.900000 keV, 1112.070000 keV, 1408.010000 keV]
+BeginOfEvent 4 | 6 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 4 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 6 | Total E: 3722.900000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [2] trackID=3 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [3] trackID=4 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [4] trackID=5 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+  [5] trackID=6 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 2.557988 keV
+Statistics: Transmitted=6 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 5 : 3 gamma(s) generated [40.120000 keV, 39.520000 keV, 121.780000 keV]
+BeginOfEvent 5 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 5 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 201.420000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(0.000000) [ABSORBED]
+  [1] trackID=2 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [2] trackID=3 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 6 : 2 gamma(s) generated [344.280000 keV, 778.900000 keV]
+BeginOfEvent 6 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 6 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1123.180000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [1] trackID=2 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 7 : 2 gamma(s) generated [40.120000 keV, 344.280000 keV]
+BeginOfEvent 7 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 7 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 384.400000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 8 : 1 gamma(s) generated [1112.070000 keV]
+BeginOfEvent 8 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 8 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 1112.070000 keV
+  [0] trackID=1 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 9 : 2 gamma(s) generated [121.780000 keV, 1408.010000 keV]
+BeginOfEvent 9 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 9 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1529.790000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 10000 : 5 gamma(s) generated [40.120000 keV, 39.520000 keV, 344.280000 keV, 964.080000 keV, 1408.010000 keV]
+BeginOfEvent 10000 | 5 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 10000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 5 | Total E: 2796.010000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [2] trackID=3 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [3] trackID=4 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [4] trackID=5 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=5 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 20000 : 4 gamma(s) generated [40.120000 keV, 244.700000 keV, 443.960000 keV, 1408.010000 keV]
+BeginOfEvent 20000 | 4 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 20000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 4 | Total E: 2136.790000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=244.700000 keV → Up(244.700000) → Down(244.700000) [TRANSMITTED]
+  [2] trackID=3 E_init=443.960000 keV → Up(443.960000) → Down(443.960000) [TRANSMITTED]
+  [3] trackID=4 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=4 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 30000 : 3 gamma(s) generated [40.120000 keV, 344.280000 keV, 1408.010000 keV]
+BeginOfEvent 30000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 30000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1792.410000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 40000 : 3 gamma(s) generated [40.120000 keV, 121.780000 keV, 1112.070000 keV]
+BeginOfEvent 40000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 40000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1273.970000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 50000 : 4 gamma(s) generated [40.120000 keV, 39.520000 keV, 344.280000 keV, 1408.010000 keV]
+BeginOfEvent 50000 | 4 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 50000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 4 | Total E: 1831.930000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [2] trackID=3 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [3] trackID=4 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=4 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 60000 : 1 gamma(s) generated [121.780000 keV]
+BeginOfEvent 60000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 60000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 121.780000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 70000 : 0 gamma(s) generated
+BeginOfEvent 70000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 70000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 80000 : 1 gamma(s) generated [39.520000 keV]
+BeginOfEvent 80000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 80000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 39.520000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 90000 : 3 gamma(s) generated [40.120000 keV, 344.280000 keV, 1112.070000 keV]
+BeginOfEvent 90000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 90000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1496.470000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 100000 : 2 gamma(s) generated [121.780000 keV, 344.280000 keV]
+BeginOfEvent 100000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 100000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 466.060000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 110000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 110000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 110000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 120000 : 0 gamma(s) generated
+BeginOfEvent 120000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 120000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 130000 : 2 gamma(s) generated [39.520000 keV, 867.380000 keV]
+BeginOfEvent 130000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 130000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 906.900000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 140000 : 2 gamma(s) generated [39.520000 keV, 344.280000 keV]
+BeginOfEvent 140000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 140000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 383.800000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 150000 : 1 gamma(s) generated [39.520000 keV]
+BeginOfEvent 150000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 150000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 39.520000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 160000 : 5 gamma(s) generated [40.120000 keV, 121.780000 keV, 244.700000 keV, 867.380000 keV, 1112.070000 keV]
+BeginOfEvent 160000 | 5 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 160000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 5 | Total E: 2386.050000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [2] trackID=3 E_init=244.700000 keV → Up(244.700000) → Down(244.700000) [TRANSMITTED]
+  [3] trackID=4 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+  [4] trackID=5 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=5 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 170000 : 2 gamma(s) generated [39.520000 keV, 964.080000 keV]
+BeginOfEvent 170000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 170000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1003.600000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 180000 : 0 gamma(s) generated
+BeginOfEvent 180000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 180000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 190000 : 6 gamma(s) generated [40.120000 keV, 344.280000 keV, 443.960000 keV, 778.900000 keV, 1112.070000 keV, 1408.010000 keV]
+BeginOfEvent 190000 | 6 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 190000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 6 | Total E: 4127.340000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=443.960000 keV → Up(443.960000) → Down(443.960000) [TRANSMITTED]
+  [3] trackID=4 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [4] trackID=5 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+  [5] trackID=6 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=6 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 200000 : 2 gamma(s) generated [778.900000 keV, 1408.010000 keV]
+BeginOfEvent 200000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 200000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2186.910000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(0.000000) [ABSORBED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 210000 : 2 gamma(s) generated [40.120000 keV, 121.780000 keV]
+BeginOfEvent 210000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 210000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 161.900000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 220000 : 1 gamma(s) generated [121.780000 keV]
+BeginOfEvent 220000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 220000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 121.780000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 230000 : 0 gamma(s) generated
+BeginOfEvent 230000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 230000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 240000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 240000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 240000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 250000 : 3 gamma(s) generated [121.780000 keV, 344.280000 keV, 1112.070000 keV]
+BeginOfEvent 250000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 250000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1578.130000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 260000 : 2 gamma(s) generated [964.080000 keV, 1408.010000 keV]
+BeginOfEvent 260000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 260000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2372.090000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 270000 : 1 gamma(s) generated [778.900000 keV]
+BeginOfEvent 270000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 270000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 778.900000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 280000 : 0 gamma(s) generated
+BeginOfEvent 280000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 280000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 290000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 290000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 290000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 300000 : 2 gamma(s) generated [40.120000 keV, 867.380000 keV]
+BeginOfEvent 300000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 300000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 907.500000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 310000 : 1 gamma(s) generated [964.080000 keV]
+BeginOfEvent 310000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 310000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 964.080000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 320000 : 2 gamma(s) generated [964.080000 keV, 1408.010000 keV]
+BeginOfEvent 320000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 320000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2372.090000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 330000 : 2 gamma(s) generated [867.380000 keV, 964.080000 keV]
+BeginOfEvent 330000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 330000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1831.460000 keV
+  [0] trackID=1 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 340000 : 2 gamma(s) generated [244.700000 keV, 964.080000 keV]
+BeginOfEvent 340000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 340000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1208.780000 keV
+  [0] trackID=1 E_init=244.700000 keV → Up(244.700000) → Down(244.700000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 350000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 350000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 350000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 360000 : 1 gamma(s) generated [344.280000 keV]
+BeginOfEvent 360000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 360000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 344.280000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 370000 : 3 gamma(s) generated [40.120000 keV, 867.380000 keV, 964.080000 keV]
+BeginOfEvent 370000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 370000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1871.580000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+  [2] trackID=3 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 380000 : 2 gamma(s) generated [40.120000 keV, 121.780000 keV]
+BeginOfEvent 380000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 380000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 161.900000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 390000 : 1 gamma(s) generated [1408.010000 keV]
+BeginOfEvent 390000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 390000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 1408.010000 keV
+  [0] trackID=1 E_init=1408.010000 keV → Up(1408.010000) → Down(0.000000) [ABSORBED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 400000 : 2 gamma(s) generated [40.120000 keV, 344.280000 keV]
+BeginOfEvent 400000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 400000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 384.400000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 410000 : 2 gamma(s) generated [964.080000 keV, 1112.070000 keV]
+BeginOfEvent 410000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 410000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2076.150000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [1] trackID=2 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 420000 : 1 gamma(s) generated [964.080000 keV]
+BeginOfEvent 420000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 420000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 964.080000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 430000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 430000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 430000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 440000 : 3 gamma(s) generated [778.900000 keV, 964.080000 keV, 1408.010000 keV]
+BeginOfEvent 440000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 440000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 3150.990000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [2] trackID=3 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 450000 : 2 gamma(s) generated [40.120000 keV, 964.080000 keV]
+BeginOfEvent 450000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 450000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1004.200000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 460000 : 0 gamma(s) generated
+BeginOfEvent 460000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 460000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 470000 : 3 gamma(s) generated [121.780000 keV, 778.900000 keV, 1408.010000 keV]
+BeginOfEvent 470000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 470000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 2308.690000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [2] trackID=3 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 480000 : 1 gamma(s) generated [964.080000 keV]
+BeginOfEvent 480000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 480000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 964.080000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 490000 : 3 gamma(s) generated [344.280000 keV, 964.080000 keV, 1112.070000 keV]
+BeginOfEvent 490000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 490000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 2420.430000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 500000 : 0 gamma(s) generated
+BeginOfEvent 500000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 500000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 510000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 510000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 510000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 520000 : 0 gamma(s) generated
+BeginOfEvent 520000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 520000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 530000 : 2 gamma(s) generated [39.520000 keV, 443.960000 keV]
+BeginOfEvent 530000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 530000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 483.480000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=443.960000 keV → Up(443.960000) → Down(443.960000) [TRANSMITTED]
+Dose deposit: 68.523390 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 540000 : 1 gamma(s) generated [964.080000 keV]
+BeginOfEvent 540000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 540000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 964.080000 keV
+  [0] trackID=1 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 550000 : 2 gamma(s) generated [40.120000 keV, 964.080000 keV]
+BeginOfEvent 550000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 550000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1004.200000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 560000 : 2 gamma(s) generated [40.120000 keV, 344.280000 keV]
+BeginOfEvent 560000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 560000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 384.400000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 570000 : 0 gamma(s) generated
+BeginOfEvent 570000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 570000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 580000 : 2 gamma(s) generated [778.900000 keV, 1408.010000 keV]
+BeginOfEvent 580000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 580000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2186.910000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 590000 : 2 gamma(s) generated [40.120000 keV, 121.780000 keV]
+BeginOfEvent 590000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 590000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 161.900000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 600000 : 0 gamma(s) generated
+BeginOfEvent 600000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 600000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 610000 : 0 gamma(s) generated
+BeginOfEvent 610000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 610000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 620000 : 2 gamma(s) generated [778.900000 keV, 1408.010000 keV]
+BeginOfEvent 620000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 620000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2186.910000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(0.000000) [ABSORBED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 630000 : 2 gamma(s) generated [39.520000 keV, 1408.010000 keV]
+BeginOfEvent 630000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 630000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1447.530000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 640000 : 2 gamma(s) generated [121.780000 keV, 1112.070000 keV]
+BeginOfEvent 640000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 640000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1233.850000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 650000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 650000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 650000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 660000 : 1 gamma(s) generated [1112.070000 keV]
+BeginOfEvent 660000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 660000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 1112.070000 keV
+  [0] trackID=1 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 670000 : 3 gamma(s) generated [40.120000 keV, 867.380000 keV, 964.080000 keV]
+BeginOfEvent 670000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 670000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1871.580000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+  [2] trackID=3 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 680000 : 1 gamma(s) generated [121.780000 keV]
+BeginOfEvent 680000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 680000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 121.780000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 690000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 690000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 690000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 700000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 700000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 700000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 710000 : 3 gamma(s) generated [39.520000 keV, 778.900000 keV, 1112.070000 keV]
+BeginOfEvent 710000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 710000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1930.490000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(39.520000) [TRANSMITTED]
+  [1] trackID=2 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 720000 : 1 gamma(s) generated [443.960000 keV]
+BeginOfEvent 720000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 720000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 443.960000 keV
+  [0] trackID=1 E_init=443.960000 keV → Up(443.960000) → Down(443.960000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 730000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 730000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 730000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(0.000000) [ABSORBED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 740000 : 0 gamma(s) generated
+BeginOfEvent 740000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 740000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 750000 : 0 gamma(s) generated
+BeginOfEvent 750000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 750000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 760000 : 4 gamma(s) generated [40.120000 keV, 121.780000 keV, 964.080000 keV, 1408.010000 keV]
+BeginOfEvent 760000 | 4 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 760000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 4 | Total E: 2533.990000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [2] trackID=3 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+  [3] trackID=4 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=4 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 770000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 770000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 770000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 780000 : 2 gamma(s) generated [39.520000 keV, 1112.070000 keV]
+BeginOfEvent 780000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 780000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1151.590000 keV
+  [0] trackID=1 E_init=39.520000 keV → Up(39.520000) → Down(0.000000) [ABSORBED]
+  [1] trackID=2 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 790000 : 2 gamma(s) generated [40.120000 keV, 1408.010000 keV]
+BeginOfEvent 790000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 790000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1448.130000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 800000 : 3 gamma(s) generated [40.120000 keV, 344.280000 keV, 1408.010000 keV]
+BeginOfEvent 800000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 800000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1792.410000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 810000 : 2 gamma(s) generated [40.120000 keV, 121.780000 keV]
+BeginOfEvent 810000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 810000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 161.900000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 820000 : 1 gamma(s) generated [443.960000 keV]
+BeginOfEvent 820000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 820000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 443.960000 keV
+  [0] trackID=1 E_init=443.960000 keV → Up(443.960000) → Down(443.960000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 830000 : 3 gamma(s) generated [121.780000 keV, 344.280000 keV, 1408.010000 keV]
+BeginOfEvent 830000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 830000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1874.070000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=3 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 840000 : 1 gamma(s) generated [1112.070000 keV]
+BeginOfEvent 840000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 840000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 1112.070000 keV
+  [0] trackID=1 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 850000 : 1 gamma(s) generated [344.280000 keV]
+BeginOfEvent 850000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 850000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 344.280000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 860000 : 2 gamma(s) generated [40.120000 keV, 344.280000 keV]
+BeginOfEvent 860000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 860000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 384.400000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 870000 : 2 gamma(s) generated [1112.070000 keV, 1408.010000 keV]
+BeginOfEvent 870000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 870000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 2520.080000 keV
+  [0] trackID=1 E_init=1112.070000 keV → Up(1112.070000) → Down(1112.070000) [TRANSMITTED]
+  [1] trackID=2 E_init=1408.010000 keV → Up(1408.010000) → Down(1408.010000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 880000 : 2 gamma(s) generated [121.780000 keV, 867.380000 keV]
+BeginOfEvent 880000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 880000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 989.160000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=867.380000 keV → Up(867.380000) → Down(867.380000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 890000 : 2 gamma(s) generated [40.120000 keV, 964.080000 keV]
+BeginOfEvent 890000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 890000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 1004.200000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=964.080000 keV → Up(964.080000) → Down(964.080000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 900000 : 1 gamma(s) generated [344.280000 keV]
+BeginOfEvent 900000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 900000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 344.280000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 910000 : 2 gamma(s) generated [121.780000 keV, 344.280000 keV]
+BeginOfEvent 910000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 910000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 466.060000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 920000 : 0 gamma(s) generated
+BeginOfEvent 920000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 920000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 930000 : 1 gamma(s) generated [778.900000 keV]
+BeginOfEvent 930000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 930000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 778.900000 keV
+  [0] trackID=1 E_init=778.900000 keV → Up(778.900000) → Down(778.900000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 940000 : 3 gamma(s) generated [121.780000 keV, 344.280000 keV, 1112.070000 keV]
+BeginOfEvent 940000 | 3 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 940000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 3 | Total E: 1578.130000 keV
+  [0] trackID=1 E_init=121.780000 keV → Up(121.780000) → Down(121.780000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [2] trackID=3 E_init=1112.070000 keV → Up(1112.070000) → Down(0.000000) [ABSORBED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=1 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 950000 : 0 gamma(s) generated
+BeginOfEvent 950000 | 0 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 950000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 0 | Total E: 0.000000 keV
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=0 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 960000 : 1 gamma(s) generated [344.280000 keV]
+BeginOfEvent 960000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 960000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 344.280000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 970000 : 2 gamma(s) generated [40.120000 keV, 344.280000 keV]
+BeginOfEvent 970000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 970000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 384.400000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+  [1] trackID=2 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 980000 : 2 gamma(s) generated [344.280000 keV, 411.120000 keV]
+BeginOfEvent 980000 | 2 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 980000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 2 | Total E: 755.400000 keV
+  [0] trackID=1 E_init=344.280000 keV → Up(344.280000) → Down(344.280000) [TRANSMITTED]
+  [1] trackID=2 E_init=411.120000 keV → Up(411.120000) → Down(411.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=2 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+PrimaryGenerator | Event 990000 : 1 gamma(s) generated [40.120000 keV]
+BeginOfEvent 990000 | 1 primary gamma(s) registered
+
+══════════════════════════════════════════════════
+EVENT 990000 SUMMARY
+══════════════════════════════════════════════════
+Primary gammas: 1 | Total E: 40.120000 keV
+  [0] trackID=1 E_init=40.120000 keV → Up(40.120000) → Down(40.120000) [TRANSMITTED]
+Dose deposit: 0.000000 keV
+Statistics: Transmitted=1 Absorbed=0 Scattered=0
+══════════════════════════════════════════════════
+
+... write file : dose_water_output.root - done
+... close file : dose_water_output.root - done
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         RUN SUMMARY                                       ║
+║          NORMALISATION 4π + CORRECTION GÉOMÉTRIQUE f_cone                ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  Number of events processed: 1000000
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  PRIMARY GAMMA GENERATION STATISTICS:                                     ║
+║    Total gammas generated     : 1922741
+║    Mean gammas per event      : 1.922741
+║    Expected (theory)          : 1.924
+║    Events with 0 gamma        : 110870 (11.087000%)
+║    Expected P(N=0)            : ~11.7%
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  TRANSMISSION STATISTICS:                                                 ║
+║    Gammas transmitted         : 1882778 (97.921561%)
+║    Gammas absorbed            : 39354 (2.046766%)
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  SOURCE PARAMETERS:                                                       ║
+║    Activity (4π)              : 44000.000000 Bq
+║    Cone half-angle            : 60.000000 deg
+║    Cone solid angle fraction  : 25.000000 %
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** NORMALISATION ***                                                    ║
+║    Temps simulé (4π)          : 22.727273 s (0.006313 h)
+║    Formule                    : t = N_events / A_4π
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** CORRECTION GÉOMÉTRIQUE ***                                           ║
+║    Facteur f_cone             : 0.250000 (Ω_cône/4π)
+║    Formule                    : Dose_réelle = Dose_brute × f_cone
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  DETECTOR GEOMETRY:                                                       ║
+║    Position (z)               : 20.000000 cm
+║    Distance source-detecteur  : 18.000000 cm
+║    Detector radius            : 2.000000 cm
+║    Detector area (πr²)        : 12.566371 cm²
+║    Detector mass              : 33.510322 g
+║    Detector half-angle        : 6.340192 deg
+║    Detector solid angle frac  : 0.305813 %
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  GAMMAS DANS LE DÉTECTEUR:                                                ║
+║    Gammas entrants (observé)  : 23612
+║    Gammas attendus (géom.)    : 23519
+║    Fraction du cône           : 1.228039 %
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** MÉTHODE 1 : DÉPÔT D'ÉNERGIE (Monte Carlo) ***                        ║
+║    Total energy deposited     : 893204.492705 keV
+║    Events with deposit        : 7069
+║    Energy per gamma generated : 0.464547 keV/gamma
+║    Débit BRUT                 : 676.378807 nGy/h
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │ Débit CORRIGÉ (× 0.250000)     : 169.094702 ± 4.195554 nGy/h
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** MÉTHODE 1bis : FORÇAGE D'INTERACTION ***                             ║
+║    Gammas avec forçage        : 23612
+║    Énergie forcée totale      : 946664.004808 keV
+║    Energy per gamma generated : 0.492351 keV/gamma
+║    Débit BRUT                 : 716.940045 nGy/h
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │ Débit CORRIGÉ (× 0.250000)     : 179.235011 ± 1.166424 nGy/h
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** MÉTHODE 2 : FLUENCE × μ_en/ρ ***                                     ║
+║    Gammas traversant          : 23612
+║    Σ(E × L × μ_en)            : 946664.004808 keV
+║    Energy per gamma generated : 0.492351 keV/gamma
+║    Débit BRUT                 : 716.940045 nGy/h
+║  ┌─────────────────────────────────────────────────────────────────────┐  ║
+║  │ Débit CORRIGÉ (× 0.250000)     : 179.235011 ± 1.166424 nGy/h
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** COMPARAISON AVEC VALEUR THÉORIQUE ***                                ║
+║    Valeur théorique (Eu-152)  : 174.800000 nGy/h
+║    Écart Méthode 1            : 3.263901 %
+║    Écart Méthode 1bis         : 2.537192 %
+║    → EXCELLENT ! Écart < 5%                                              ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  *** MÉTRIQUES DE COMPARAISON (indépendantes du temps) ***                ║
+║    E_déposée/gamma (MC)       : 0.464547 keV/gamma
+║    E_forcée/gamma             : 0.492351 keV/gamma
+║    E_fluence/gamma            : 0.492351 keV/gamma
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  OUTPUT FILE: dose_water_output.root
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+Graphics systems deleted.
+Visualization Manager deleting...

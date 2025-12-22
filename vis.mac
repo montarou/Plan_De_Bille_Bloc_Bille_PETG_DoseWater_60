@@ -1,0 +1,45 @@
+# Macro pour visualisation interactive
+# Mode MONO-THREAD (séquentiel)
+
+# IMPORTANT: Initialiser la géométrie en premier
+/run/initialize
+
+# Configuration du générateur (avant visualisation)
+/gun/particle gamma
+/gun/energy 14 keV
+/gun/position 1 1 0 mm
+/gun/direction 0 0 1
+
+# Maintenant on peut créer la visualisation
+# Utiliser OpenGL
+/vis/open OGL 600x600-0+0
+
+# Dessiner les volumes
+/vis/drawVolume
+
+# Afficher les axes (ajustés pour un plan de 2cm)
+/vis/scene/add/axes 0 0 0 2 cm
+
+# Ajouter une échelle
+/vis/scene/add/scale 5 mm
+
+# Trajectoires des particules
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+
+# Accumulation des événements
+/vis/scene/endOfEventAction accumulate 10
+
+# Vue par défaut - regarder le plan de billes
+/vis/viewer/set/viewpointVector 1 1 0.5
+/vis/viewer/set/upVector 0 0 1
+
+# Zoom sur la région des billes (ajusté pour plan de 2cm)
+/vis/viewer/set/targetPoint 0 0 4 cm
+/vis/viewer/zoom 10
+
+# Style de visualisation
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenEdge true

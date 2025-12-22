@@ -1,0 +1,41 @@
+# Macro file for the initialization of visualization
+# Usage: /control/execute init_vis.mac
+
+# Initialize kernel
+/run/initialize
+
+# Use OpenGL
+/vis/open OGL 800x600-0+0
+
+# Disable auto refresh and quieten vis messages whilst scene and
+# temporary parameters are established:
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+
+# Draw geometry:
+/vis/drawVolume
+
+# Specify view angle:
+/vis/viewer/set/viewpointThetaPhi 45 45
+
+# Specify zoom value:
+/vis/viewer/zoom 1.5
+
+# Specify style (surface, wireframe, cloud):
+/vis/viewer/set/style surface
+
+# Draw smooth trajectories at end of event
+/vis/scene/add/trajectories smooth
+
+# Draw hits at end of event:
+/vis/scene/add/hits
+
+# To superimpose all of the events from a given run:
+/vis/scene/endOfEventAction accumulate
+
+# Re-establish auto refreshing and verbosity:
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+# For file-based drivers, use this to create an empty detector view:
+#/vis/viewer/flush

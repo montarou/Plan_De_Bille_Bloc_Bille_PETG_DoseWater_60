@@ -1,0 +1,284 @@
+% ============================================================================
+% ANALYSE COMPARATIVE DES SIMULATIONS GEANT4
+% Configuration AIR vs Blindage Bi/PETG
+% Source : Eu-152 (44 kBq), Détecteur : Sphère d'eau (r=2 cm) à 18 cm
+% ============================================================================
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+\geometry{margin=2.5cm}
+
+\sisetup{
+    separate-uncertainty = true,
+    multi-part-units = single,
+    per-mode = symbol
+}
+
+% Couleurs pour mise en évidence
+\definecolor{lightgreen}{RGB}{220,255,220}
+\definecolor{lightyellow}{RGB}{255,255,220}
+\definecolor{lightblue}{RGB}{220,235,255}
+
+\begin{document}
+
+\begin{center}
+\Large\textbf{Analyse des Simulations Geant4}\\[0.5em]
+\large Comparaison AIR vs Blindage Bi/PETG\\[0.3em]
+\normalsize Source Eu-152 -- Détecteur eau à 18 cm
+\end{center}
+
+\vspace{1em}
+
+% ============================================================================
+% SECTION 1 : PARAMÈTRES DE SIMULATION
+% ============================================================================
+
+\section{Paramètres de simulation}
+
+\begin{table}[htbp]
+\centering
+\caption{Paramètres communs aux deux configurations}
+\label{tab:parametres}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Source Eu-152}} \\
+\quad Activité ($4\pi$) & \SI{44}{\kilo\becquerel} \\
+\quad Gammas moyens/désintégration & 1.924 \\
+\quad Position & $z = \SI{2}{\centi\meter}$ \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Émission}} \\
+\quad Demi-angle du cône & \SI{60}{\degree} \\
+\quad Fraction d'angle solide & 25\% \\
+\quad Facteur de correction $f_{\text{cône}}$ & 0.25 \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Détecteur (eau)}} \\
+\quad Position & $z = \SI{20}{\centi\meter}$ \\
+\quad Distance source--détecteur & \SI{18}{\centi\meter} \\
+\quad Rayon & \SI{2}{\centi\meter} \\
+\quad Masse & \SI{33.51}{\gram} \\
+\quad Demi-angle sous-tendu & \SI{6.34}{\degree} \\
+\quad Fraction d'angle solide & 0.306\% \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Physique}} \\
+\quad Liste de physique & FTFP\_BERT \\
+\quad Modèle EM & Livermore (basse énergie) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Configurations spécifiques}
+\label{tab:configs}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Paramètre} & \textbf{AIR} & \textbf{Bi/PETG} \\
+\midrule
+Nombre d'événements & $1 \times 10^6$ & $25 \times 10^6$ \\
+Gammas générés & 1\,922\,741 & 48\,097\,193 \\
+Temps simulé & \SI{22.73}{\second} & \SI{568.2}{\second} \\
+\midrule
+Matériau plaque & Air & PETG ($\rho = \SI{1.27}{\gram\per\centi\meter\cubed}$) \\
+Matériau billes & Air & Bi ($\rho = \SI{9.75}{\gram\per\centi\meter\cubed}$) \\
+Nombre de billes & --- & 3\,402 ($\diameter$ \SI{2}{\milli\meter}) \\
+Épaisseur blindage & \SI{18}{\milli\meter} & \SI{18}{\milli\meter} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% SECTION 2 : STATISTIQUES DE TRANSMISSION
+% ============================================================================
+
+\section{Statistiques de transmission}
+
+\begin{table}[htbp]
+\centering
+\caption{Comparaison des statistiques de transmission}
+\label{tab:transmission}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Paramètre} & \textbf{AIR} & \textbf{Bi/PETG} & \textbf{Ratio} \\
+\midrule
+Gammas transmis & 1\,882\,778 (97.9\%) & 8\,206\,025 (17.1\%) & $\div 5.7$ \\
+Gammas absorbés & 39\,354 (2.0\%) & 37\,208\,628 (77.4\%) & $\times 38$ \\
+\midrule
+Gammas entrant dans détecteur & 23\,612 & 160\,538 & --- \\
+Fraction du cône vers détecteur & 1.23\% & 0.33\% & $\div 3.7$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Analyse :} Le blindage Bi/PETG absorbe \textbf{77.4\%} des gammas incidents contre seulement 2.0\% pour l'air. Le taux de transmission passe de 97.9\% à 17.1\%, soit une réduction d'un facteur \textbf{5.7}.
+
+% ============================================================================
+% SECTION 3 : RÉSULTATS DES TROIS MÉTHODES
+% ============================================================================
+
+\section{Débits de dose calculés}
+
+\subsection{Configuration AIR (référence)}
+
+\begin{table}[htbp]
+\centering
+\caption{Débits de dose -- Configuration AIR ($1 \times 10^6$ événements)}
+\label{tab:dose_air}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} \\
+& (MC direct) & (Forçage) & (Fluence) \\
+\midrule
+Énergie totale (keV) & 893\,204 & 946\,664 & 946\,664 \\
+E/gamma (keV/$\gamma$) & 0.465 & 0.492 & 0.492 \\
+Débit brut (nGy/h) & 676.4 & 716.9 & 716.9 \\
+\rowcolor{lightgreen}
+\textbf{Débit corrigé (nGy/h)} & $\mathbf{169.1 \pm 4.2}$ & $\mathbf{179.2 \pm 1.2}$ & $\mathbf{179.2 \pm 1.2}$ \\
+\midrule
+Écart vs théorie (174.8) & 3.3\% & 2.5\% & 2.5\% \\
+Incertitude statistique & 2.5\% & 0.65\% & 0.65\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Configuration Bi/PETG (blindage)}
+
+\begin{table}[htbp]
+\centering
+\caption{Débits de dose -- Configuration Bi/PETG ($25 \times 10^6$ événements)}
+\label{tab:dose_bi}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} \\
+& (MC direct) & (Forçage) & (Fluence) \\
+\midrule
+Énergie totale (keV) & 11\,966\,205 & 12\,465\,564 & 12\,465\,564 \\
+E/gamma (keV/$\gamma$) & 0.249 & 0.259 & 0.259 \\
+Débit brut (nGy/h) & 362.5 & 377.6 & 377.6 \\
+\rowcolor{lightyellow}
+\textbf{Débit corrigé (nGy/h)} & $\mathbf{90.6 \pm 0.7}$ & $\mathbf{94.4 \pm 0.2}$ & $\mathbf{94.4 \pm 0.2}$ \\
+\midrule
+Incertitude statistique & 0.73\% & 0.25\% & 0.25\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% SECTION 4 : ANALYSE COMPARATIVE
+% ============================================================================
+
+\section{Analyse comparative et efficacité du blindage}
+
+\begin{table}[htbp]
+\centering
+\caption{Comparaison des débits de dose AIR vs Bi/PETG}
+\label{tab:comparaison}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} & \textbf{Moyenne} \\
+& (nGy/h) & (nGy/h) & (nGy/h) & (nGy/h) \\
+\midrule
+Théorique (AIR) & \multicolumn{4}{c}{174.8} \\
+\midrule
+\rowcolor{lightgreen}
+AIR (simulé) & $169.1 \pm 4.2$ & $179.2 \pm 1.2$ & $179.2 \pm 1.2$ & $\sim$176 \\
+\rowcolor{lightyellow}
+Bi/PETG (simulé) & $90.6 \pm 0.7$ & $94.4 \pm 0.2$ & $94.4 \pm 0.2$ & $\sim$93 \\
+\midrule
+\rowcolor{lightblue}
+\textbf{Facteur de réduction} & \textbf{1.87} & \textbf{1.90} & \textbf{1.90} & $\mathbf{\sim 1.9}$ \\
+\textbf{Réduction (\%)} & \textbf{46\%} & \textbf{47\%} & \textbf{47\%} & $\mathbf{\sim 47\%}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Vérification de cohérence}
+
+\begin{table}[htbp]
+\centering
+\caption{Métriques de cohérence (indépendantes de la normalisation)}
+\label{tab:coherence}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Métrique} & \textbf{AIR} & \textbf{Bi/PETG} & \textbf{Ratio AIR/Bi} \\
+\midrule
+E/gamma -- Méthode 1 (keV/$\gamma$) & 0.465 & 0.249 & 1.87 \\
+E/gamma -- Méthode 1bis (keV/$\gamma$) & 0.492 & 0.259 & 1.90 \\
+Transmission (\%) & 97.9 & 17.1 & 5.7 \\
+Gammas dans détecteur / 10$^6$ events & 23\,612 & 6\,422 & 3.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Cohérence validée :}
+\begin{itemize}
+    \item Le ratio E/gamma (AIR/Bi) $\approx 1.9$ correspond exactement au facteur de réduction de dose
+    \item La transmission chute de 97.9\% à 17.1\% (facteur 5.7)
+    \item Les trois méthodes donnent des résultats cohérents entre elles
+    \item L'écart AIR simulé vs théorique est < 5\% (validation du code)
+\end{itemize}
+
+% ============================================================================
+% SECTION 5 : TABLEAU RÉCAPITULATIF FINAL
+% ============================================================================
+
+\section{Résumé}
+
+\begin{table}[htbp]
+\centering
+\caption{Tableau récapitulatif -- Efficacité du blindage Bi/PETG}
+\label{tab:resume}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur} & \textbf{Commentaire} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Débit de dose (Méthode 1bis -- Forçage)}} \\
+\quad Configuration AIR & $179.2 \pm 1.2$ nGy/h & Référence \\
+\quad Configuration Bi/PETG & $94.4 \pm 0.2$ nGy/h & Avec blindage \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Efficacité du blindage}} \\
+\quad Facteur de réduction & \textbf{1.90} & $\dot{D}_{\text{AIR}} / \dot{D}_{\text{Bi}}$ \\
+\quad Réduction relative & \textbf{47\%} & $(1 - \dot{D}_{\text{Bi}}/\dot{D}_{\text{AIR}}) \times 100$ \\
+\quad Transmission résiduelle & 17.1\% & Gammas traversant le blindage \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Validation}} \\
+\quad Écart AIR simulé vs théorique & 2.5\% & $< 5\%$ : Excellent \\
+\quad Cohérence des 3 méthodes & Oui & Écart $< 6\%$ entre méthodes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% SECTION 6 : CONCLUSIONS
+% ============================================================================
+
+\section{Conclusions}
+
+\begin{enumerate}
+    \item \textbf{Validation du code :} La simulation AIR donne un débit de dose de $179.2 \pm 1.2$ nGy/h, en excellent accord avec la valeur théorique de 174.8 nGy/h (écart 2.5\%).
+    
+    \item \textbf{Efficacité du blindage :} Le blindage Bi/PETG (billes de bismuth dans une matrice PETG) réduit le débit de dose d'un facteur \textbf{1.9}, soit une réduction de \textbf{47\%}.
+    
+    \item \textbf{Mécanisme d'atténuation :} 
+    \begin{itemize}
+        \item 77.4\% des gammas sont absorbés dans le blindage
+        \item Seuls 17.1\% des gammas traversent le blindage
+        \item Le spectre transmis est durci (gammas basse énergie préférentiellement absorbés)
+    \end{itemize}
+    
+    \item \textbf{Cohérence des méthodes :} Les trois méthodes de calcul (MC direct, forçage d'interaction, fluence) donnent des résultats cohérents, validant l'approche de simulation.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,19 @@
+# Fichiers compiles
+*.o
+*.so
+*.exe
+build/
+
+# Fichiers temporaires
+*~
+*.swp
+*.tmp
+
+# Gros fichiers (> 100 Mo)
+*.root
+*.zip
+*.tar.gz
+
+# Fichiers specifiques a l'IDE
+.vscode/
+.idea/

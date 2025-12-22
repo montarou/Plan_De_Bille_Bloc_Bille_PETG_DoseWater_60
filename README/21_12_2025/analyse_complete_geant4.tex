@@ -1,0 +1,697 @@
+% ============================================================================
+% ANALYSE COMPLÈTE DES SIMULATIONS GEANT4
+% Configuration AIR vs Blindage Bi/PETG
+% Avec description géométrique, normalisation et figures TikZ
+% ============================================================================
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{float}
+
+\usetikzlibrary{patterns, arrows.meta, calc, decorations.pathreplacing, angles, quotes, shadings, positioning}
+
+\geometry{margin=2.2cm}
+
+\sisetup{
+    separate-uncertainty = true,
+    multi-part-units = single,
+    per-mode = symbol
+}
+
+% Couleurs
+\definecolor{lightgreen}{RGB}{220,255,220}
+\definecolor{lightyellow}{RGB}{255,255,220}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{bismuth}{RGB}{180,140,200}
+\definecolor{petg}{RGB}{200,200,220}
+\definecolor{eau}{RGB}{150,200,255}
+\definecolor{air}{RGB}{240,248,255}
+\definecolor{cone60}{RGB}{255,200,150}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Simulation Geant4 -- Eu-152}
+\lhead{Blindage Bi/PETG}
+\rfoot{Page \thepage}
+
+\begin{document}
+
+% ============================================================================
+% TITRE
+% ============================================================================
+
+\begin{center}
+\LARGE\textbf{Simulation Geant4 : Blindage Gamma Bi/PETG}\\[0.8em]
+\Large Analyse Comparative AIR vs Blindage\\[0.5em]
+\large Source Eu-152 (\SI{44}{\kilo\becquerel}) -- Détecteur eau à \SI{18}{\centi\meter}\\[1em]
+\normalsize\today
+\end{center}
+
+\vspace{1em}
+
+\tableofcontents
+\newpage
+
+% ============================================================================
+% SECTION 1 : DESCRIPTION DE LA GÉOMÉTRIE
+% ============================================================================
+
+\section{Description de la géométrie}
+
+\subsection{Vue d'ensemble}
+
+La géométrie de simulation comprend une source ponctuelle d'Eu-152, un blindage composite (plaque PETG avec billes de bismuth), et un détecteur sphérique d'eau simulant un tissu biologique.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8, >=Stealth]
+    % Axe Z
+    \draw[->, thick] (-1,0) -- (14,0) node[right] {$z$ (cm)};
+    \draw[->, thick] (0,-4) -- (0,4) node[above] {$r$};
+    
+    % Graduations
+    \foreach \x in {2,4,6,8,10,12} {
+        \draw (\x*0.65,0.1) -- (\x*0.65,-0.1) node[below, font=\scriptsize] {\x};
+    }
+    
+    % Source (z = 2 cm)
+    \fill[red] (1.3,0) circle (0.15);
+    \node[above, red, font=\small] at (1.3,0.3) {Source};
+    \node[below, font=\scriptsize] at (1.3,-0.5) {$z=2$};
+    
+    % Plaque PETG (z = 3.75 à 5.55 cm)
+    \fill[petg] (2.44,-2.5) rectangle (3.61,2.5);
+    \draw[thick] (2.44,-2.5) rectangle (3.61,2.5);
+    \node[font=\scriptsize, rotate=90] at (3.0,0) {PETG};
+    
+    % Cavité avec billes (au centre de la plaque)
+    \fill[air] (2.7,-1.2) rectangle (3.35,1.2);
+    \draw[dashed] (2.7,-1.2) rectangle (3.35,1.2);
+    
+    % Billes de bismuth (représentation schématique)
+    \foreach \y in {-0.9,-0.45,0,0.45,0.9} {
+        \foreach \x in {2.8,2.95,3.1,3.25} {
+            \fill[bismuth] (\x,\y) circle (0.08);
+        }
+    }
+    
+    % Annotation plaque
+    \draw[<->] (2.44,-3) -- (3.61,-3) node[midway, below, font=\scriptsize] {\SI{18}{\milli\meter}};
+    \node[below, font=\scriptsize] at (2.44,-0.3) {$z=3.75$};
+    \node[below, font=\scriptsize] at (3.61,-0.3) {$z=5.55$};
+    
+    % Détecteur eau (z = 20 cm, r = 2 cm)
+    \fill[eau, opacity=0.7] (13,0) circle (1.0);
+    \draw[thick, blue] (13,0) circle (1.0);
+    \node[font=\small] at (13,0) {Eau};
+    \node[below, font=\scriptsize] at (13,-1.3) {$z=20$};
+    
+    % Distance source-détecteur
+    \draw[<->, thick, gray] (1.3,3.2) -- (13,3.2) node[midway, above, font=\small] {\SI{18}{\centi\meter}};
+    
+    % Cône d'émission 60°
+    \fill[cone60, opacity=0.2] (1.3,0) -- (13,3.5) -- (13,-3.5) -- cycle;
+    \draw[orange, thick, dashed] (1.3,0) -- (13,3.5);
+    \draw[orange, thick, dashed] (1.3,0) -- (13,-3.5);
+    
+    % Angle 60°
+    \draw[orange, thick] (2.5,0) arc (0:30:1.2) node[midway, right, font=\scriptsize] {$60°$};
+    
+    % Légende
+    \node[anchor=west, font=\footnotesize] at (8,-3.5) {
+        \tikz{\fill[cone60, opacity=0.3] (0,0) rectangle (0.3,0.3);} Cône d'émission
+    };
+\end{tikzpicture}
+\caption{Vue longitudinale (coupe XZ) de la géométrie de simulation}
+\label{fig:geometry_xz}
+\end{figure}
+
+\subsection{Structure du blindage}
+
+Le blindage est constitué d'une plaque de PETG contenant une cavité remplie de billes de bismuth arrangées en empilement hexagonal compact (HCP).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.2, >=Stealth]
+    % Plaque PETG externe
+    \fill[petg] (0,0) rectangle (6,4);
+    \draw[thick] (0,0) rectangle (6,4);
+    
+    % Cavité d'air
+    \fill[air] (0.8,0.8) rectangle (5.2,3.2);
+    \draw[thick, dashed] (0.8,0.8) rectangle (5.2,3.2);
+    
+    % Billes de bismuth - 5 plans HCP
+    % Plan 1 (Type A)
+    \foreach \x in {1.2,1.6,2.0,2.4,2.8,3.2,3.6,4.0,4.4,4.8} {
+        \fill[bismuth] (\x,1.1) circle (0.12);
+    }
+    % Plan 2 (Type B) - décalé
+    \foreach \x in {1.0,1.4,1.8,2.2,2.6,3.0,3.4,3.8,4.2,4.6,5.0} {
+        \fill[bismuth] (\x,1.5) circle (0.12);
+    }
+    % Plan 3 (Type A)
+    \foreach \x in {1.2,1.6,2.0,2.4,2.8,3.2,3.6,4.0,4.4,4.8} {
+        \fill[bismuth] (\x,1.9) circle (0.12);
+    }
+    % Plan 4 (Type B) - décalé
+    \foreach \x in {1.0,1.4,1.8,2.2,2.6,3.0,3.4,3.8,4.2,4.6,5.0} {
+        \fill[bismuth] (\x,2.3) circle (0.12);
+    }
+    % Plan 5 (Type A)
+    \foreach \x in {1.2,1.6,2.0,2.4,2.8,3.2,3.6,4.0,4.4,4.8} {
+        \fill[bismuth] (\x,2.7) circle (0.12);
+    }
+    
+    % Cotations
+    \draw[<->] (0,-0.3) -- (6,-0.3) node[midway, below, font=\small] {\SI{100}{\milli\meter}};
+    \draw[<->] (-0.3,0) -- (-0.3,4) node[midway, left, font=\small, rotate=90] {\SI{18}{\milli\meter}};
+    \draw[<->] (6.3,0.8) -- (6.3,3.2) node[midway, right, font=\small] {\SI{8.53}{\milli\meter}};
+    \draw[<->] (0.8,3.5) -- (5.2,3.5) node[midway, above, font=\small] {\SI{50}{\milli\meter}};
+    
+    % Labels
+    \node[font=\small] at (0.4,3.6) {PETG};
+    \node[font=\scriptsize] at (3,0.5) {PETG ($\rho = \SI{1.27}{\gram\per\centi\meter\cubed}$)};
+    
+    % Légende billes
+    \draw[->] (5.5,2.7) -- (6.5,3.3) node[right, font=\scriptsize] {Bi ($\diameter$\SI{2}{\milli\meter})};
+    
+    % Direction du faisceau
+    \draw[->, ultra thick, red] (-1,2) -- (0,2) node[midway, above, font=\small] {$\gamma$};
+\end{tikzpicture}
+\caption{Coupe transversale du blindage : plaque PETG avec cavité contenant les billes de bismuth}
+\label{fig:blindage_coupe}
+\end{figure}
+
+\subsection{Empilement hexagonal compact des billes}
+
+Les billes sont arrangées en 5 plans selon un empilement hexagonal compact (HCP), alternant entre plans de type A (686 billes) et type B (672 billes).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.6]
+    % Vue de dessus - Plan Type A
+    \begin{scope}[xshift=0cm]
+        \node[above, font=\bfseries] at (4,6) {Plan Type A (686 billes)};
+        \foreach \row in {0,...,5} {
+            \foreach \col in {0,...,5} {
+                \fill[bismuth] (\col*1.2, \row*1.04) circle (0.4);
+            }
+        }
+        \draw[->] (-0.5,-1) -- (7,-1) node[right, font=\scriptsize] {$x$};
+        \draw[->] (-0.5,-1) -- (-0.5,6) node[above, font=\scriptsize] {$y$};
+    \end{scope}
+    
+    % Vue de dessus - Plan Type B (décalé)
+    \begin{scope}[xshift=10cm]
+        \node[above, font=\bfseries] at (4,6) {Plan Type B (672 billes)};
+        \foreach \row in {0,...,5} {
+            \foreach \col in {0,...,5} {
+                \fill[bismuth!70] ({0.6+\col*1.2}, {0.52+\row*1.04}) circle (0.4);
+            }
+        }
+        \draw[->] (-0.5,-1) -- (7,-1) node[right, font=\scriptsize] {$x$};
+        \draw[->] (-0.5,-1) -- (-0.5,6) node[above, font=\scriptsize] {$y$};
+        
+        % Montrer le décalage
+        \draw[<->, thick, orange] (0.6,5.7) -- (1.2,5.7) node[midway, above, font=\scriptsize] {$\frac{d}{2}$};
+    \end{scope}
+\end{tikzpicture}
+\caption{Vue de dessus des plans de billes : Type A et Type B (décalé de $d/2$ en $x$ et $y$)}
+\label{fig:plans_billes}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Caractéristiques de l'empilement de billes de bismuth}
+\label{tab:billes}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Paramètre} & \textbf{Description} & \textbf{Valeur} \\
+\midrule
+Diamètre billes & $d$ & \SI{2.00}{\milli\meter} \\
+Matériau & Bismuth (Z=83) & G4\_Bi \\
+Densité Bi & $\rho_{\text{Bi}}$ & \SI{9.747}{\gram\per\centi\meter\cubed} \\
+\midrule
+Plan 1 (Type A) & $z = \SI{-3.266}{\milli\meter}$ & 686 billes \\
+Plan 2 (Type B) & $z = \SI{-1.633}{\milli\meter}$ & 672 billes \\
+Plan 3 (Type A) & $z = \SI{0.000}{\milli\meter}$ & 686 billes \\
+Plan 4 (Type B) & $z = \SI{+1.633}{\milli\meter}$ & 672 billes \\
+Plan 5 (Type A) & $z = \SI{+3.266}{\milli\meter}$ & 686 billes \\
+\midrule
+\textbf{Total} & 5 plans HCP & \textbf{3402 billes} \\
+Épaisseur totale & & \SI{8.53}{\milli\meter} \\
+Masse billes & & \SI{138.90}{\gram} \\
+Masse surfacique & & \SI{1.39}{\gram\per\centi\meter\squared} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Positions sur l'axe Z}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.55, >=Stealth]
+    % Axe principal
+    \draw[->, ultra thick] (0,0) -- (22,0) node[right] {$z$ (cm)};
+    
+    % Graduations
+    \foreach \x in {0,2,4,6,8,10,12,14,16,18,20} {
+        \draw[thick] (\x,0.2) -- (\x,-0.2);
+        \node[below] at (\x,-0.3) {\scriptsize\x};
+    }
+    
+    % Source
+    \fill[red] (2,0) circle (0.25);
+    \draw[red, thick] (2,0.5) -- (2,2) node[above, font=\small\bfseries] {Source};
+    
+    % Plaque PETG
+    \fill[petg, opacity=0.7] (3.75,-1.5) rectangle (5.55,1.5);
+    \draw[thick] (3.75,-1.5) rectangle (5.55,1.5);
+    \node[font=\scriptsize, rotate=90] at (4.65,0) {Plaque};
+    
+    % Cavité
+    \fill[air] (4.0,-0.8) rectangle (5.3,0.8);
+    \foreach \y in {-0.5,0,0.5} {
+        \fill[bismuth] (4.3,\y) circle (0.12);
+        \fill[bismuth] (4.65,\y) circle (0.12);
+        \fill[bismuth] (5.0,\y) circle (0.12);
+    }
+    
+    % Plans de comptage
+    \draw[blue, very thick] (3.45,-1.8) -- (3.45,1.8);
+    \node[blue, font=\scriptsize] at (3.45,2.2) {Upstream};
+    \draw[green!50!black, very thick] (5.85,-1.8) -- (5.85,1.8);
+    \node[green!50!black, font=\scriptsize] at (5.85,2.2) {Downstream};
+    
+    % Détecteur
+    \fill[eau, opacity=0.6] (20,0) circle (1.2);
+    \draw[thick, blue] (20,0) circle (1.2);
+    \node[font=\small] at (20,0) {Eau};
+    \draw[thick] (20,1.5) -- (20,2.5) node[above, font=\small\bfseries] {Détecteur};
+    
+    % Cotations
+    \draw[<->, thick] (2,-3) -- (20,-3) node[midway, below, font=\small] {\SI{18}{\centi\meter} (distance source--détecteur)};
+    \draw[<->, thick] (3.75,-2) -- (5.55,-2) node[midway, below, font=\scriptsize] {\SI{18}{\milli\meter}};
+    
+    % Annotations positions
+    \node[below, font=\tiny, red] at (2,-0.5) {2.00};
+    \node[below, font=\tiny] at (3.75,-0.5) {3.75};
+    \node[below, font=\tiny] at (5.55,-0.5) {5.55};
+    \node[below, font=\tiny, blue] at (20,-1.5) {20.00};
+\end{tikzpicture}
+\caption{Positions des éléments sur l'axe Z (en cm)}
+\label{fig:positions_z}
+\end{figure}
+
+% ============================================================================
+% SECTION 2 : ANGLES SOLIDES ET NORMALISATION
+% ============================================================================
+
+\section{Angles solides et normalisation}
+
+\subsection{Définition des angles solides}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.0, >=Stealth]
+    % Source
+    \fill[red] (0,0) circle (0.1);
+    \node[left, red, font=\small] at (-0.2,0) {Source};
+    
+    % Sphère 4π (représentation)
+    \draw[gray, dashed] (0,0) circle (3);
+    \node[gray, font=\scriptsize] at (2.5,2.5) {$4\pi$ sr};
+    
+    % Cône 60°
+    \fill[cone60, opacity=0.3] (0,0) -- (60:4) arc (60:-60:4) -- cycle;
+    \draw[orange, thick] (0,0) -- (60:4);
+    \draw[orange, thick] (0,0) -- (-60:4);
+    \draw[orange, thick] (60:4) arc (60:-60:4);
+    
+    % Angle 60°
+    \draw[orange, thick, ->] (1.5,0) arc (0:60:1.5);
+    \node[orange, font=\small] at (1.2,0.8) {$\theta = 60°$};
+    \draw[orange, thick, ->] (1.5,0) arc (0:-60:1.5);
+    
+    % Détecteur (petit angle)
+    \fill[eau, opacity=0.5] (5,0) circle (0.4);
+    \draw[blue, thick] (5,0) circle (0.4);
+    \draw[blue, dashed] (0,0) -- (5,0.4);
+    \draw[blue, dashed] (0,0) -- (5,-0.4);
+    
+    % Angle détecteur
+    \draw[blue, thick, ->] (2,0) arc (0:4.5:2);
+    \node[blue, font=\scriptsize] at (2.3,0.3) {$\theta_{\text{det}} = 6.34°$};
+    
+    % Axe Z
+    \draw[->, thick] (0,0) -- (6,0) node[right] {$z$};
+    
+    % Légende
+    \node[anchor=west, font=\small] at (6,2) {\textbf{Angles solides :}};
+    \node[anchor=west, font=\scriptsize, orange] at (6,1.5) {Cône 60° : $\Omega_{\text{cône}} = 2\pi(1-\cos 60°) = \pi$ sr};
+    \node[anchor=west, font=\scriptsize, orange] at (6,1.0) {Fraction : $f_{\text{cône}} = \Omega_{\text{cône}}/4\pi = 25\%$};
+    \node[anchor=west, font=\scriptsize, blue] at (6,0.3) {Détecteur : $\Omega_{\text{det}} = 2\pi(1-\cos 6.34°)$};
+    \node[anchor=west, font=\scriptsize, blue] at (6,-0.2) {Fraction : $f_{\text{det}} = 0.306\%$};
+\end{tikzpicture}
+\caption{Visualisation des angles solides : cône d'émission (60°) et détecteur (6.34°)}
+\label{fig:angles_solides}
+\end{figure}
+
+\subsection{Calcul des angles solides}
+
+L'angle solide d'un cône de demi-angle $\theta$ est donné par :
+\begin{equation}
+\Omega = 2\pi (1 - \cos\theta) \quad \text{[sr]}
+\end{equation}
+
+La fraction d'angle solide par rapport à $4\pi$ stéradians est :
+\begin{equation}
+f = \frac{\Omega}{4\pi} = \frac{1 - \cos\theta}{2}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Angles solides des différents éléments}
+\label{tab:angles_solides}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Élément} & \textbf{Demi-angle $\theta$} & \textbf{Angle solide $\Omega$} & \textbf{Fraction $f$} \\
+\midrule
+Sphère complète & 180° & $4\pi$ sr & 100\% \\
+\rowcolor{cone60!30}
+Cône d'émission & 60° & $\pi$ sr & \textbf{25\%} \\
+Empilement billes$^*$ & $\sim$15.5° & 0.227 sr & 1.81\% \\
+Détecteur eau & 6.34° & 0.0384 sr & 0.306\% \\
+\bottomrule
+\multicolumn{4}{@{}l}{\footnotesize $^*$ Calculé pour une cavité de $50 \times 50$ mm² à $z = 4.65$ cm depuis la source à $z = 2$ cm}
+\end{tabular}
+\end{table}
+
+\paragraph{Calcul de l'angle solide de l'empilement :}
+La cavité contenant les billes a des dimensions $50 \times 50$ mm² et est centrée à $z = 4.65$ cm. Depuis la source à $z = 2$ cm, la distance est $d = 2.65$ cm. Le demi-angle est :
+\begin{equation}
+\theta_{\text{billes}} = \arctan\left(\frac{25\text{ mm}}{26.5\text{ mm}}\right) \approx 43.3° \quad \text{(pour un coin)}
+\end{equation}
+Pour un carré, l'angle solide équivalent est approximativement celui d'un cône de demi-angle $\sim 15.5°$ inscrit.
+
+\subsection{Principe de la normalisation}
+
+\subsubsection{Problème}
+
+La simulation génère des gammas dans un cône de 60° (pas dans $4\pi$) pour optimiser l'efficacité statistique. Il faut donc normaliser correctement pour obtenir des débits de dose réalistes.
+
+\subsubsection{Méthode de normalisation}
+
+\begin{enumerate}
+    \item \textbf{Temps simulé} basé sur l'activité $4\pi$ :
+    \begin{equation}
+    t_{\text{sim}} = \frac{N_{\text{événements}}}{A_{4\pi}}
+    \end{equation}
+    où $A_{4\pi} = \SI{44000}{\becquerel}$ est l'activité totale de la source.
+    
+    \item \textbf{Facteur de correction géométrique} :
+    \begin{equation}
+    f_{\text{cône}} = \frac{\Omega_{\text{cône}}}{4\pi} = \frac{1 - \cos(60°)}{2} = 0.25
+    \end{equation}
+    
+    \item \textbf{Débit de dose corrigé} :
+    \begin{equation}
+    \boxed{\dot{D}_{\text{réel}} = \dot{D}_{\text{brut}} \times f_{\text{cône}} = \dot{D}_{\text{brut}} \times 0.25}
+    \end{equation}
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9, >=Stealth, node distance=2cm]
+    % Boîtes
+    \node[draw, rounded corners, fill=red!20, minimum width=3cm, minimum height=1.2cm] (source) at (0,0) {Source Eu-152\\$A_{4\pi} = 44$ kBq};
+    
+    \node[draw, rounded corners, fill=orange!20, minimum width=3cm, minimum height=1.2cm] (events) at (5,0) {$N$ événements\\(désintégrations)};
+    
+    \node[draw, rounded corners, fill=yellow!20, minimum width=3cm, minimum height=1.2cm] (temps) at (10,0) {$t = N / A_{4\pi}$\\Temps simulé};
+    
+    \node[draw, rounded corners, fill=green!20, minimum width=3cm, minimum height=1.2cm] (brut) at (5,-3) {$\dot{D}_{\text{brut}}$\\Débit brut};
+    
+    \node[draw, rounded corners, fill=blue!20, minimum width=3cm, minimum height=1.2cm] (corr) at (10,-3) {$\dot{D}_{\text{réel}} = \dot{D}_{\text{brut}} \times 0.25$\\Débit corrigé};
+    
+    % Flèches
+    \draw[->, thick] (source) -- (events);
+    \draw[->, thick] (events) -- (temps);
+    \draw[->, thick] (events) -- (brut) node[midway, right, font=\scriptsize] {Simulation};
+    \draw[->, thick] (brut) -- (corr) node[midway, above, font=\scriptsize] {$\times f_{\text{cône}}$};
+    \draw[->, thick] (temps) -- (corr);
+\end{tikzpicture}
+\caption{Schéma de la normalisation temporelle et correction géométrique}
+\label{fig:normalisation}
+\end{figure}
+
+% ============================================================================
+% SECTION 3 : BILAN DES PARTICULES
+% ============================================================================
+
+\section{Bilan des particules générées et transmises}
+
+\subsection{Génération des gammas primaires}
+
+Chaque désintégration de l'Eu-152 peut émettre plusieurs gammas selon un schéma de désexcitation complexe. Le nombre moyen de gammas par désintégration est $\bar{n}_\gamma = 1.924$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+    % Histogramme schématique
+    \draw[->] (0,0) -- (8,0) node[right] {$n_\gamma$};
+    \draw[->] (0,0) -- (0,5) node[above] {Probabilité};
+    
+    % Barres
+    \fill[blue!60] (0.5,0) rectangle (1.2,2.2);  % 0 gamma: 11%
+    \fill[blue!60] (1.5,0) rectangle (2.2,4.5);  % 1 gamma
+    \fill[blue!60] (2.5,0) rectangle (3.2,4.0);  % 2 gammas
+    \fill[blue!60] (3.5,0) rectangle (4.2,2.5);  % 3 gammas
+    \fill[blue!60] (4.5,0) rectangle (5.2,1.2);  % 4 gammas
+    \fill[blue!60] (5.5,0) rectangle (6.2,0.4);  % 5 gammas
+    \fill[blue!60] (6.5,0) rectangle (7.2,0.1);  % 6+ gammas
+    
+    % Labels
+    \node[below, font=\scriptsize] at (0.85,0) {0};
+    \node[below, font=\scriptsize] at (1.85,0) {1};
+    \node[below, font=\scriptsize] at (2.85,0) {2};
+    \node[below, font=\scriptsize] at (3.85,0) {3};
+    \node[below, font=\scriptsize] at (4.85,0) {4};
+    \node[below, font=\scriptsize] at (5.85,0) {5};
+    \node[below, font=\scriptsize] at (6.85,0) {6+};
+    
+    % Annotation
+    \node[above, font=\scriptsize] at (0.85,2.2) {11\%};
+    \node[font=\small] at (4,5.5) {$\bar{n}_\gamma = 1.924$ gammas/désintégration};
+\end{tikzpicture}
+\caption{Distribution du nombre de gammas par désintégration (schématique)}
+\label{fig:distrib_gamma}
+\end{figure}
+
+\subsection{Bilan comparatif AIR vs Bi/PETG}
+
+\begin{table}[H]
+\centering
+\caption{Bilan des particules : génération et transmission}
+\label{tab:bilan}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Paramètre} & \textbf{AIR} & \textbf{Bi/PETG} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Génération}} \\
+Nombre d'événements & $1 \times 10^6$ & $25 \times 10^6$ \\
+Gammas générés & 1\,922\,741 & 48\,097\,193 \\
+Moyenne $\gamma$/événement & 1.923 & 1.924 \\
+Événements sans gamma & 11.09\% & 11.08\% \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Transmission à travers le blindage}} \\
+\rowcolor{lightgreen}
+Gammas transmis & 1\,882\,778 (97.9\%) & 8\,206\,025 (17.1\%) \\
+\rowcolor{lightyellow}
+Gammas absorbés & 39\,354 (2.0\%) & 37\,208\,628 (77.4\%) \\
+Gammas diffusés & $\sim$0.1\% & $\sim$5.5\% \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Détection (sphère d'eau)}} \\
+Gammas entrant dans détecteur & 23\,612 & 160\,538 \\
+Fraction du cône & 1.23\% & 0.33\% \\
+Événements avec dépôt & 7\,069 & 30\,610 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Configuration AIR
+    \begin{scope}[xshift=0cm]
+        \node[font=\bfseries] at (2.5,4.5) {Configuration AIR};
+        
+        % Barre générés
+        \fill[blue!70] (0,3) rectangle (5,3.8);
+        \node[white, font=\small] at (2.5,3.4) {100\% générés};
+        
+        % Barre transmis
+        \fill[green!60] (0,1.5) rectangle (4.9,2.3);
+        \node[font=\small] at (2.5,1.9) {97.9\% transmis};
+        
+        % Barre absorbés
+        \fill[red!60] (4.9,1.5) rectangle (5,2.3);
+        
+        % Barre détecteur
+        \fill[cyan!60] (0,0) rectangle (0.3,0.8);
+        \node[right, font=\scriptsize] at (0.35,0.4) {1.23\% vers détecteur};
+        
+        % Flèches
+        \draw[->, thick] (2.5,2.9) -- (2.5,2.4);
+        \draw[->, thick] (0.15,1.4) -- (0.15,0.9);
+    \end{scope}
+    
+    % Configuration Bi/PETG
+    \begin{scope}[xshift=7cm]
+        \node[font=\bfseries] at (2.5,4.5) {Configuration Bi/PETG};
+        
+        % Barre générés
+        \fill[blue!70] (0,3) rectangle (5,3.8);
+        \node[white, font=\small] at (2.5,3.4) {100\% générés};
+        
+        % Barre transmis
+        \fill[green!60] (0,1.5) rectangle (0.85,2.3);
+        \node[right, font=\scriptsize] at (0.9,1.9) {17.1\%};
+        
+        % Barre absorbés
+        \fill[red!60] (0.85,1.5) rectangle (4.72,2.3);
+        \node[font=\small] at (2.8,1.9) {77.4\% absorbés};
+        
+        % Barre diffusés
+        \fill[orange!60] (4.72,1.5) rectangle (5,2.3);
+        
+        % Barre détecteur
+        \fill[cyan!60] (0,0) rectangle (0.08,0.8);
+        \node[right, font=\scriptsize] at (0.12,0.4) {0.33\% vers détecteur};
+        
+        % Flèches
+        \draw[->, thick] (2.5,2.9) -- (2.5,2.4);
+        \draw[->, thick] (0.04,1.4) -- (0.04,0.9);
+    \end{scope}
+\end{tikzpicture}
+\caption{Comparaison visuelle du bilan des particules}
+\label{fig:bilan_visuel}
+\end{figure}
+
+% ============================================================================
+% SECTION 4 : RÉSULTATS DES SIMULATIONS
+% ============================================================================
+
+\section{Résultats des simulations}
+
+\subsection{Débits de dose -- Configuration AIR}
+
+\begin{table}[H]
+\centering
+\caption{Débits de dose -- Configuration AIR ($1 \times 10^6$ événements)}
+\label{tab:dose_air}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} \\
+& (MC direct) & (Forçage) & (Fluence $\times \mu_{en}/\rho$) \\
+\midrule
+Énergie totale (keV) & 893\,204 & 946\,664 & 946\,664 \\
+E/gamma (keV/$\gamma$) & 0.465 & 0.492 & 0.492 \\
+Débit brut (nGy/h) & 676.4 & 716.9 & 716.9 \\
+\rowcolor{lightgreen}
+\textbf{Débit corrigé (nGy/h)} & $\mathbf{169.1 \pm 4.2}$ & $\mathbf{179.2 \pm 1.2}$ & $\mathbf{179.2 \pm 1.2}$ \\
+\midrule
+Écart vs théorie (174.8) & 3.3\% & 2.5\% & 2.5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Débits de dose -- Configuration Bi/PETG}
+
+\begin{table}[H]
+\centering
+\caption{Débits de dose -- Configuration Bi/PETG ($25 \times 10^6$ événements)}
+\label{tab:dose_bi}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} \\
+& (MC direct) & (Forçage) & (Fluence $\times \mu_{en}/\rho$) \\
+\midrule
+Énergie totale (keV) & 11\,966\,205 & 12\,465\,564 & 12\,465\,564 \\
+E/gamma (keV/$\gamma$) & 0.249 & 0.259 & 0.259 \\
+Débit brut (nGy/h) & 362.5 & 377.6 & 377.6 \\
+\rowcolor{lightyellow}
+\textbf{Débit corrigé (nGy/h)} & $\mathbf{90.6 \pm 0.7}$ & $\mathbf{94.4 \pm 0.2}$ & $\mathbf{94.4 \pm 0.2}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparaison et efficacité du blindage}
+
+\begin{table}[H]
+\centering
+\caption{Comparaison AIR vs Bi/PETG et efficacité du blindage}
+\label{tab:comparaison}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} & \textbf{Moyenne} \\
+\midrule
+AIR (simulé) & $169.1 \pm 4.2$ & $179.2 \pm 1.2$ & $179.2 \pm 1.2$ & $\sim$176 nGy/h \\
+Bi/PETG (simulé) & $90.6 \pm 0.7$ & $94.4 \pm 0.2$ & $94.4 \pm 0.2$ & $\sim$93 nGy/h \\
+\midrule
+\rowcolor{lightblue}
+\textbf{Facteur de réduction} & \textbf{1.87} & \textbf{1.90} & \textbf{1.90} & $\mathbf{\approx 1.9}$ \\
+\textbf{Réduction (\%)} & 46\% & 47\% & 47\% & $\mathbf{\approx 47\%}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% SECTION 5 : CONCLUSIONS
+% ============================================================================
+
+\section{Conclusions}
+
+\begin{enumerate}
+    \item \textbf{Validation du code :} La simulation AIR donne un débit de dose de $179.2 \pm 1.2$ nGy/h, en excellent accord avec la valeur théorique de 174.8 nGy/h (écart 2.5\%).
+    
+    \item \textbf{Efficacité du blindage Bi/PETG :}
+    \begin{itemize}
+        \item Réduction du débit de dose d'un facteur \textbf{1.9}
+        \item Réduction relative de \textbf{47\%}
+        \item Absorption de 77.4\% des gammas incidents
+    \end{itemize}
+    
+    \item \textbf{Cohérence des méthodes :} Les trois méthodes de calcul donnent des résultats concordants (écart < 6\%).
+    
+    \item \textbf{Caractéristiques du blindage :}
+    \begin{itemize}
+        \item 3402 billes de bismuth ($\diameter$ 2 mm) en empilement HCP
+        \item Masse surfacique totale : \SI{8.12}{\gram\per\centi\meter\squared}
+        \item Épaisseur totale : \SI{18}{\milli\meter} (PETG + billes)
+    \end{itemize}
+\end{enumerate}
+
+\vfill
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}\\[0.5em]
+\textit{Document généré à partir des simulations Geant4 v11.03}
+\end{center}
+
+\end{document}

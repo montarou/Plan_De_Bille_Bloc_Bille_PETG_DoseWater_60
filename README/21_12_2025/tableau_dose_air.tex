@@ -1,0 +1,111 @@
+% Tableau des résultats de simulation Geant4
+% Configuration : AIR (sans blindage), 1×10^6 événements
+% Source : Eu-152 (44 kBq), Détecteur : Sphère d'eau (r=2 cm) à 18 cm
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+
+\sisetup{
+    separate-uncertainty = true,
+    multi-part-units = single,
+    per-mode = symbol
+}
+
+\begin{document}
+
+% ============================================================================
+% TABLEAU PRINCIPAL : Résultats des trois méthodes - Configuration AIR
+% ============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Débits de dose calculés par les trois méthodes de simulation Geant4 -- Configuration AIR (sans blindage)}
+\label{tab:dose_air}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& \textbf{Méthode 1} & \textbf{Méthode 1bis} & \textbf{Méthode 2} \\
+& \textbf{(MC direct)} & \textbf{(Forçage)} & \textbf{(Fluence $\times \mu_{en}/\rho$)} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Statistiques de détection}} \\[2pt]
+\quad Événements avec dépôt & 7\,069 & --- & --- \\
+\quad Gammas traversant détecteur & --- & 23\,612 & 23\,612 \\
+\quad Énergie totale (keV) & 893\,204 & 946\,664 & 946\,664 \\
+\quad Énergie/gamma généré (keV/$\gamma$) & 0.465 & 0.492 & 0.492 \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Débits de dose}} \\[2pt]
+\quad Débit brut (nGy/h) & 676.4 & 716.9 & 716.9 \\[3pt]
+\quad \textbf{Débit corrigé (nGy/h)} & $\mathbf{169.1 \pm 4.2}$ & $\mathbf{179.2 \pm 1.2}$ & $\mathbf{179.2 \pm 1.2}$ \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Comparaison avec la valeur théorique (174.8 nGy/h)}} \\[2pt]
+\quad Écart relatif (\%) & 3.3 & 2.5 & 2.5 \\
+\quad Incertitude statistique (\%) & 2.5 & 0.65 & 0.65 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLEAU COMPACT : Résumé pour publication
+% ============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Résumé des débits de dose simulés -- Configuration AIR}
+\label{tab:resume_air}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Méthode} & \textbf{Débit de dose (nGy/h)} \\
+\midrule
+Valeur théorique & 174.8 \\
+\midrule
+Méthode 1 -- Dépôt d'énergie MC & $169.1 \pm 4.2$ \\
+Méthode 1bis -- Forçage d'interaction & $179.2 \pm 1.2$ \\
+Méthode 2 -- Fluence $\times \mu_{en}/\rho$ & $179.2 \pm 1.2$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% TABLEAU DES PARAMÈTRES DE SIMULATION
+% ============================================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Paramètres de la simulation Geant4 -- Configuration AIR}
+\label{tab:parametres_air}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Source}} \\
+\quad Radionucléide & Eu-152 \\
+\quad Activité ($4\pi$) & \SI{44}{\kilo\becquerel} \\
+\quad Gammas moyens/désintégration & 1.924 \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Simulation}} \\
+\quad Nombre d'événements & $1 \times 10^6$ \\
+\quad Gammas générés & 1\,922\,741 \\
+\quad Demi-angle du cône d'émission & \SI{60}{\degree} \\
+\quad Facteur de correction $f_{\text{cône}}$ & 0.25 \\
+\quad Temps simulé & \SI{22.73}{\second} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Géométrie}} \\
+\quad Distance source--détecteur & \SI{18}{\centi\meter} \\
+\quad Rayon du détecteur (eau) & \SI{2}{\centi\meter} \\
+\quad Masse du détecteur & \SI{33.51}{\gram} \\
+\quad Configuration & AIR (sans blindage) \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Transmission}} \\
+\quad Gammas transmis & 97.9\% \\
+\quad Gammas absorbés & 2.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

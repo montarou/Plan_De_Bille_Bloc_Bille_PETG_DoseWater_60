@@ -1,0 +1,222 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{patterns, decorations.pathreplacing, calc, arrows.meta}
+
+% Couleurs personnalisees
+\definecolor{wpetg}{RGB}{34,139,34}
+\definecolor{aircolor}{RGB}{200,230,255}
+\definecolor{billeA}{RGB}{218,165,32}
+\definecolor{billeB}{RGB}{205,92,92}
+\definecolor{watercolor}{RGB}{100,180,255}
+\definecolor{conecolor}{RGB}{255,200,100}
+
+\begin{document}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.38, >=Stealth]
+
+% =============================================================================
+% PARAMETRES (echelle : 1 unit = 1 mm, puis scale=0.38)
+% =============================================================================
+% Source : z = 20 mm (x = 0)
+% Plaque : z = 37.5 mm a 55.5 mm (centre 46.5 mm), largeur X = 100 mm
+% Cavite : z = 42.2 mm a 50.8 mm, largeur X = 50 mm
+% Detecteur : z = 200 mm, rayon = 20 mm
+
+% =============================================================================
+% AXE Z (horizontal) et AXE X (vertical)
+% =============================================================================
+\draw[->, very thick] (-10, 0) -- (220, 0) node[right] {$z$ (mm)};
+\draw[->, very thick] (0, -70) -- (0, 70) node[above] {$x$ (mm)};
+
+% Graduations sur l'axe Z
+\foreach \z in {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200} {
+    \draw (\z, -2) -- (\z, 2);
+    \node[below, font=\footnotesize] at (\z, -4) {\z};
+}
+
+% =============================================================================
+% SOURCE (z = 20 mm)
+% =============================================================================
+\fill[red!80!black] (20, 0) circle (3);
+\node[above, red!80!black, font=\small\bfseries] at (20, 5) {Source};
+\node[below, red!80!black, font=\footnotesize] at (20, -8) {$z=20$};
+
+% =============================================================================
+% CONE DE DEMI-ANGLE 48.4 degres
+% =============================================================================
+% Le cone part de la source (z=20) et s'ouvre vers la cavite
+% Demi-angle = 48.4 deg, donc tan(48.4) = 1.125
+% A z = 42.2 (entree cavite), rayon = (42.2-20) * tan(48.4) = 22.2 * 1.125 = 25 mm
+
+% Cone colore (du source jusqu'au detecteur)
+\fill[conecolor, opacity=0.25] (20, 0) -- (200, 202.5) -- (200, -202.5) -- cycle;
+
+% Lignes du cone (bords)
+\draw[orange!70!black, thick, dashed] (20, 0) -- (200, 202.5);
+\draw[orange!70!black, thick, dashed] (20, 0) -- (200, -202.5);
+
+% Cone jusqu'a la cavite (plus visible)
+\fill[conecolor, opacity=0.4] (20, 0) -- (42.2, 25) -- (42.2, -25) -- cycle;
+
+% Annotation angle
+\draw[orange!70!black, thick] (20,0) ++(0:15) arc (0:48.4:15);
+\node[orange!70!black, font=\footnotesize] at (38, 12) {$\theta=48.4°$};
+\draw[orange!70!black, thick] (20,0) ++(0:15) arc (0:-48.4:15);
+
+% =============================================================================
+% PLAQUE W/PETG (z = 37.5 a 55.5 mm, x = -50 a +50 mm)
+% =============================================================================
+% Partie gauche de la plaque (avant cavite en x)
+\fill[wpetg!50] (37.5, -50) rectangle (55.5, -25);
+\fill[wpetg!50] (37.5, 25) rectangle (55.5, 50);
+
+% Partie au-dessus et en-dessous de la cavite (en z)
+\fill[wpetg!50] (37.5, -25) rectangle (42.2, 25);
+\fill[wpetg!50] (50.8, -25) rectangle (55.5, 25);
+
+% Contour de la plaque
+\draw[wpetg!70!black, very thick] (37.5, -50) rectangle (55.5, 50);
+
+% Label plaque
+\node[wpetg!50!black, font=\small\bfseries, rotate=90] at (34, 0) {W/PETG};
+
+% =============================================================================
+% CAVITE D'AIR (z = 42.2 a 50.8 mm, x = -25 a +25 mm)
+% =============================================================================
+\fill[aircolor!60] (42.2, -25) rectangle (50.8, 25);
+\draw[aircolor!70!black, thick, dashed] (42.2, -25) rectangle (50.8, 25);
+
+% =============================================================================
+% BILLES DE BISMUTH (5 plans dans la cavite)
+% =============================================================================
+\def\r{1.5}
+
+% Plan 1 (Type A) - z = 43.2
+\foreach \x in {-23, -19, -15, -11, -7, -3, 1, 5, 9, 13, 17, 21} {
+    \fill[billeA!80] (43.2, \x) circle (\r);
+}
+
+% Plan 2 (Type B) - z = 44.8
+\foreach \x in {-21, -17, -13, -9, -5, -1, 3, 7, 11, 15, 19, 23} {
+    \fill[billeB!80] (44.8, \x) circle (\r);
+}
+
+% Plan 3 (Type A) - z = 46.5
+\foreach \x in {-23, -19, -15, -11, -7, -3, 1, 5, 9, 13, 17, 21} {
+    \fill[billeA!80] (46.5, \x) circle (\r);
+}
+
+% Plan 4 (Type B) - z = 48.1
+\foreach \x in {-21, -17, -13, -9, -5, -1, 3, 7, 11, 15, 19, 23} {
+    \fill[billeB!80] (48.1, \x) circle (\r);
+}
+
+% Plan 5 (Type A) - z = 49.8
+\foreach \x in {-23, -19, -15, -11, -7, -3, 1, 5, 9, 13, 17, 21} {
+    \fill[billeA!80] (49.8, \x) circle (\r);
+}
+
+% =============================================================================
+% DETECTEUR DOSE (z = 200 mm, sphere rayon 20 mm)
+% =============================================================================
+\fill[watercolor!70] (200, 0) circle (20);
+\draw[blue!70!black, thick] (200, 0) circle (20);
+\node[blue!70!black, font=\small\bfseries] at (200, 28) {Detecteur};
+\node[blue!70!black, font=\footnotesize] at (200, -28) {(Eau, $r=20$ mm)};
+
+% =============================================================================
+% COTATIONS
+% =============================================================================
+
+% Distance source - plaque
+\draw[<->, thick] (20, -58) -- (37.5, -58);
+\node[below, font=\footnotesize] at (28.75, -58) {17.5};
+
+% Distance source - cavite
+\draw[<->, thick] (20, -65) -- (42.2, -65);
+\node[below, font=\footnotesize] at (31, -65) {22.2};
+
+% Epaisseur plaque
+\draw[<->, thick] (37.5, 55) -- (55.5, 55);
+\node[above, font=\footnotesize] at (46.5, 55) {18 mm};
+
+% Largeur cavite
+\draw[<->, thick] (58, -25) -- (58, 25);
+\node[right, font=\footnotesize] at (58, 0) {50 mm};
+
+% Distance source - detecteur
+\draw[<->, thick] (20, 62) -- (200, 62);
+\node[above, font=\footnotesize] at (110, 62) {180 mm};
+
+% =============================================================================
+% LEGENDE
+% =============================================================================
+\node[anchor=north west, font=\small] at (-5, -75) {
+    \begin{tikzpicture}[scale=0.8]
+        \fill[red!80!black] (0, 0) circle (0.15);
+        \node[right, font=\footnotesize] at (0.3, 0) {Source Eu-152};
+        
+        \fill[wpetg!50] (4, -0.2) rectangle (4.6, 0.2);
+        \node[right, font=\footnotesize] at (4.8, 0) {W/PETG (75/25)};
+        
+        \fill[aircolor!60] (9.5, -0.2) rectangle (10.1, 0.2);
+        \node[right, font=\footnotesize] at (10.3, 0) {Cavite air};
+        
+        \fill[billeA!80] (14, 0) circle (0.15);
+        \fill[billeB!80] (14.5, 0) circle (0.15);
+        \node[right, font=\footnotesize] at (14.8, 0) {Billes Bi};
+        
+        \fill[conecolor, opacity=0.4] (18.5, -0.2) rectangle (19.1, 0.2);
+        \node[right, font=\footnotesize] at (19.3, 0) {Cone $2\theta=96.8°$};
+    \end{tikzpicture}
+};
+
+% =============================================================================
+% TITRE
+% =============================================================================
+\node[font=\large\bfseries] at (100, 75) {Coupe XZ -- Cone inscrit dans la cavite ($\theta = 48.4°$)};
+
+\end{tikzpicture}
+\caption{Vue en coupe XZ montrant la source, la plaque W/PETG avec la cavite contenant l'empilement de billes de bismuth, et le detecteur de dose. Le cone orange represente le demi-angle de 48.4° inscrit dans la section de 50$\times$50 mm$^2$ de la cavite.}
+\label{fig:coupe_cone}
+\end{figure}
+
+% =============================================================================
+% CALCULS
+% =============================================================================
+\section*{Calcul du demi-angle du cone}
+
+\textbf{Donnees geometriques :}
+\begin{itemize}
+    \item Position source : $z_s = 20$ mm
+    \item Face avant cavite : $z_c = 42.2$ mm (centre plaque $-$ demi-epaisseur cavite)
+    \item Rayon inscrit dans la cavite : $r = 25$ mm (pour une section de 50$\times$50 mm$^2$)
+\end{itemize}
+
+\textbf{Distance source $\rightarrow$ entree cavite :}
+\[
+d = z_c - z_s = 42.2 - 20 = 22.2 \text{ mm}
+\]
+
+\textbf{Demi-angle du cone :}
+\[
+\theta = \arctan\left(\frac{r}{d}\right) = \arctan\left(\frac{25}{22.2}\right) = \arctan(1.126) = 48.4°
+\]
+
+\textbf{Angle total du cone :}
+\[
+2\theta = 96.8° \approx 97°
+\]
+
+\textbf{Angle solide :}
+\[
+\Omega = 2\pi(1 - \cos\theta) = 2\pi(1 - \cos 48.4°) = 2\pi(1 - 0.664) = 2.11 \text{ sr}
+\]
+
+\end{document}
