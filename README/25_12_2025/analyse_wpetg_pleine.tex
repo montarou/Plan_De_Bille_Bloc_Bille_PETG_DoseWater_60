@@ -1,0 +1,684 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{patterns,decorations.pathreplacing,calc,arrows.meta,shapes.geometric,positioning}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+
+% Couleurs personnalisées
+\definecolor{wpetg}{RGB}{0,150,0}
+\definecolor{bismuth}{RGB}{180,100,180}
+\definecolor{petg}{RGB}{100,150,200}
+\definecolor{air}{RGB}{200,220,255}
+\definecolor{water}{RGB}{0,100,200}
+\definecolor{source}{RGB}{255,50,50}
+\definecolor{cone}{RGB}{255,200,100}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Simulation Geant4 - Blindage W/PETG}
+\lhead{Analyse des Résultats}
+\rfoot{Page \thepage}
+
+\title{\textbf{Simulation Monte Carlo Geant4}\\[0.5cm]
+\Large Mesure de Dose avec Blindage W/PETG Plein\\[0.3cm]
+\large Comparaison avec Configuration Bi/PETG à Billes}
+\author{Analyse de Simulation}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%=============================================================================
+\section{Introduction}
+%=============================================================================
+
+Ce document présente l'analyse des résultats de simulation Monte Carlo Geant4 pour la mesure de dose absorbée dans l'eau en présence d'un blindage W/PETG plein de 18~mm d'épaisseur. Les résultats sont comparés avec la configuration de référence (air) et la configuration avec billes de bismuth dans une matrice PETG.
+
+\subsection{Objectifs}
+
+\begin{itemize}
+    \item Caractériser l'atténuation d'une plaque W/PETG pleine (75\%W / 25\%PETG en masse)
+    \item Comparer avec le blindage Bi/PETG à billes
+    \item Valider la normalisation et les méthodes de calcul de dose
+\end{itemize}
+
+%=============================================================================
+\section{Description de la Géométrie}
+%=============================================================================
+
+\subsection{Configuration avec Billes de Bismuth (Référence)}
+
+La configuration Bi/PETG consiste en un empilement hexagonal compact (HCP) de billes de bismuth dans une cavité remplie de PETG. Cette géométrie est illustrée dans les figures suivantes.
+
+\subsubsection{Coupe Longitudinale (Plan XZ)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Cadre et axes
+    \draw[->] (-0.5,0) -- (12,0) node[right] {$z$ (cm)};
+    \draw[->] (0,-4) -- (0,4) node[above] {$x$ (cm)};
+    
+    % Échelle
+    \foreach \x in {2,4,6,8,10,12,14,16,18,20} {
+        \pgfmathsetmacro{\xpos}{\x/2}
+        \draw (\xpos,-0.1) -- (\xpos,0.1);
+        \pgfmathparse{int(\x)}
+        \node[below,font=\tiny] at (\xpos,-0.15) {\pgfmathresult};
+    }
+    
+    % Source (z = 2 cm)
+    \fill[source] (1,0) circle (0.15);
+    \node[above,font=\small] at (1,0.3) {Source};
+    \node[below,font=\tiny] at (1,-0.3) {$z=2$};
+    
+    % Cône d'émission (60°)
+    \fill[cone,opacity=0.2] (1,0) -- (10,3.46) -- (10,-3.46) -- cycle;
+    \draw[cone,thick,dashed] (1,0) -- (10,3.46);
+    \draw[cone,thick,dashed] (1,0) -- (10,-3.46);
+    
+    % Arc pour l'angle
+    \draw[thick,->] (2.5,0) arc (0:30:1.5) node[midway,right,font=\tiny] {60°};
+    
+    % Plaque PETG (z = 3.75 à 5.55 cm)
+    \fill[petg,opacity=0.5] (1.875,-2.5) rectangle (2.775,2.5);
+    \draw[thick] (1.875,-2.5) rectangle (2.775,2.5);
+    
+    % Cavité avec billes (schématique)
+    \fill[air,opacity=0.3] (1.95,-1.8) rectangle (2.7,1.8);
+    
+    % Billes de bismuth (représentation schématique)
+    \foreach \y in {-1.5,-1.0,-0.5,0,0.5,1.0,1.5} {
+        \fill[bismuth] (2.1,\y) circle (0.12);
+        \fill[bismuth] (2.35,\y) circle (0.12);
+        \fill[bismuth] (2.55,\y) circle (0.12);
+    }
+    
+    % Labels plaque
+    \draw[<->,thick] (1.875,-3) -- (2.775,-3) node[midway,below,font=\tiny] {18 mm};
+    \node[font=\small,align=center] at (2.325,3.2) {Plaque PETG\\+ Billes Bi};
+    
+    % Plans de comptage
+    \draw[blue,thick,dashed] (1.725,-2.8) -- (1.725,2.8);
+    \node[blue,font=\tiny,rotate=90] at (1.55,0) {Upstream};
+    
+    \draw[red,thick,dashed] (2.925,-2.8) -- (2.925,2.8);
+    \node[red,font=\tiny,rotate=90] at (3.1,0) {Downstream};
+    
+    % Détecteur eau (z = 20 cm)
+    \fill[water,opacity=0.5] (10,0) circle (0.8);
+    \draw[water,thick] (10,0) circle (0.8);
+    \node[font=\small] at (10,1.3) {Détecteur};
+    \node[font=\tiny] at (10,-1.3) {Eau, $r=2$ cm};
+    \node[font=\tiny] at (10,-1.7) {$z=20$ cm};
+    
+    % Distance source-détecteur
+    \draw[<->,thick] (1,-3.5) -- (10,-3.5) node[midway,below,font=\small] {18 cm};
+    
+    % Légende
+    \node[font=\footnotesize,align=left] at (7,-2.5) {
+        \textcolor{source}{$\bullet$} Source Eu-152\\
+        \textcolor{bismuth}{$\bullet$} Billes Bi\\
+        \textcolor{petg}{$\blacksquare$} PETG\\
+        \textcolor{water}{$\bullet$} Eau
+    };
+    
+\end{tikzpicture}
+\caption{Coupe longitudinale (plan XZ) de la configuration Bi/PETG avec billes de bismuth. Le cône d'émission de demi-angle 60° est représenté en orange.}
+\label{fig:coupe_long_bipetg}
+\end{figure}
+
+\subsubsection{Coupe Transversale (Plan XY)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+    % Plaque PETG extérieure
+    \fill[petg,opacity=0.3] (-5,-5) rectangle (5,5);
+    \draw[thick] (-5,-5) rectangle (5,5);
+    \node[font=\small] at (0,5.5) {Plaque PETG 10$\times$10 cm²};
+    
+    % Cavité
+    \fill[air,opacity=0.5] (-3.6,-3.6) rectangle (3.6,3.6);
+    \draw[thick,dashed] (-3.6,-3.6) rectangle (3.6,3.6);
+    \node[font=\tiny] at (0,-4) {Cavité 7.2$\times$7.2 cm²};
+    
+    % Empilement HCP de billes (vue de dessus)
+    % Rangées paires
+    \foreach \i in {-5,-4,-3,-2,-1,0,1,2,3,4,5} {
+        \foreach \j in {-3,-1,1,3} {
+            \pgfmathsetmacro{\xpos}{\i*0.6}
+            \pgfmathsetmacro{\ypos}{\j*0.52}
+            \pgfmathparse{abs(\xpos) < 3.3 && abs(\ypos) < 3.3 ? 1 : 0}
+            \ifnum\pgfmathresult=1
+                \fill[bismuth] (\xpos,\ypos) circle (0.25);
+            \fi
+        }
+    }
+    % Rangées impaires (décalées)
+    \foreach \i in {-5,-4,-3,-2,-1,0,1,2,3,4,5} {
+        \foreach \j in {-4,-2,0,2,4} {
+            \pgfmathsetmacro{\xpos}{\i*0.6+0.3}
+            \pgfmathsetmacro{\ypos}{\j*0.52}
+            \pgfmathparse{abs(\xpos) < 3.3 && abs(\ypos) < 3.3 ? 1 : 0}
+            \ifnum\pgfmathresult=1
+                \fill[bismuth] (\xpos,\ypos) circle (0.25);
+            \fi
+        }
+    }
+    
+    % Axes
+    \draw[->] (-5.5,0) -- (5.5,0) node[right] {$x$};
+    \draw[->] (0,-5.5) -- (0,5.5) node[above] {$y$};
+    
+    % Angle solide de l'empilement
+    \draw[red,thick] (0,0) circle (3.6);
+    \node[red,font=\tiny] at (2.8,2.8) {$\theta \approx 15.5°$};
+    
+    % Légende
+    \fill[bismuth] (6,2) circle (0.25);
+    \node[right,font=\small] at (6.4,2) {Billes Bi ($\diameter$ 6 mm)};
+    \fill[petg,opacity=0.5] (5.75,1) rectangle (6.25,1.5);
+    \node[right,font=\small] at (6.4,1.25) {PETG};
+    
+\end{tikzpicture}
+\caption{Coupe transversale (plan XY) montrant l'empilement hexagonal compact des billes de bismuth dans la cavité PETG.}
+\label{fig:coupe_trans_bipetg}
+\end{figure}
+
+\subsection{Configuration Plaque W/PETG Pleine}
+
+La configuration étudiée dans ce rapport remplace l'empilement de billes par une plaque homogène de W/PETG (75\% tungstène, 25\% PETG en fractions massiques).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Cadre et axes
+    \draw[->] (-0.5,0) -- (12,0) node[right] {$z$ (cm)};
+    \draw[->] (0,-4) -- (0,4) node[above] {$x$ (cm)};
+    
+    % Échelle
+    \foreach \x in {2,4,6,8,10,12,14,16,18,20} {
+        \pgfmathsetmacro{\xpos}{\x/2}
+        \draw (\xpos,-0.1) -- (\xpos,0.1);
+        \pgfmathparse{int(\x)}
+        \node[below,font=\tiny] at (\xpos,-0.15) {\pgfmathresult};
+    }
+    
+    % Source (z = 2 cm)
+    \fill[source] (1,0) circle (0.15);
+    \node[above,font=\small] at (1,0.3) {Source};
+    \node[below,font=\tiny] at (1,-0.3) {Eu-152};
+    
+    % Cône d'émission (60°)
+    \fill[cone,opacity=0.2] (1,0) -- (10,3.46) -- (10,-3.46) -- cycle;
+    \draw[cone,thick,dashed] (1,0) -- (10,3.46);
+    \draw[cone,thick,dashed] (1,0) -- (10,-3.46);
+    
+    % Plaque W/PETG pleine (z = 3.75 à 5.55 cm)
+    \fill[wpetg,opacity=0.6] (1.875,-2.5) rectangle (2.775,2.5);
+    \draw[thick] (1.875,-2.5) rectangle (2.775,2.5);
+    
+    % Hachures pour W/PETG
+    \foreach \y in {-2.4,-2.0,-1.6,-1.2,-0.8,-0.4,0,0.4,0.8,1.2,1.6,2.0,2.4} {
+        \draw[wpetg!50!black,thin] (1.875,\y) -- (2.775,\y+0.2);
+    }
+    
+    % Labels plaque
+    \draw[<->,thick] (1.875,-3) -- (2.775,-3) node[midway,below,font=\tiny] {18 mm};
+    \node[font=\small,align=center] at (2.325,3.2) {W/PETG\\75\%/25\%};
+    
+    % Caractéristiques
+    \node[font=\tiny,align=left] at (4.5,2.5) {
+        $\rho = 4.24$ g/cm³\\
+        $m_s = 7.64$ g/cm²
+    };
+    
+    % Détecteur eau (z = 20 cm)
+    \fill[water,opacity=0.5] (10,0) circle (0.8);
+    \draw[water,thick] (10,0) circle (0.8);
+    \node[font=\small] at (10,1.3) {Détecteur};
+    \node[font=\tiny] at (10,-1.3) {$r=2$ cm};
+    
+    % Enveloppe AIR
+    \draw[air,thick,dotted] (-0.3,-3.8) rectangle (11,3.8);
+    \node[air!50!black,font=\tiny] at (5.5,3.5) {Enveloppe AIR};
+    
+\end{tikzpicture}
+\caption{Coupe longitudinale de la configuration W/PETG pleine. La plaque homogène remplace l'empilement de billes.}
+\label{fig:coupe_long_wpetg}
+\end{figure}
+
+\subsection{Paramètres Géométriques}
+
+\begin{table}[H]
+\centering
+\caption{Paramètres géométriques des deux configurations}
+\label{tab:geometrie}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Paramètre} & \textbf{Bi/PETG (billes)} & \textbf{W/PETG (pleine)} \\
+\midrule
+Position source $z$ & 2.00 cm & 2.00 cm \\
+Face avant plaque & 3.75 cm & 3.75 cm \\
+Face arrière plaque & 5.55 cm & 5.55 cm \\
+Épaisseur totale & 18 mm & 18 mm \\
+Position détecteur & 20.00 cm & 20.00 cm \\
+Distance source-détecteur & 18 cm & 18 cm \\
+\midrule
+Dimensions plaque & $10 \times 10$ cm² & $10 \times 10$ cm² \\
+Diamètre billes & 6 mm & — \\
+Nombre de billes & 3402 & — \\
+\midrule
+Densité blindage & 9.79 g/cm³ (Bi) & 4.24 g/cm³ \\
+Masse surfacique & 8.12 g/cm² & 7.64 g/cm² \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=============================================================================
+\section{Angles Solides et Normalisation}
+%=============================================================================
+
+\subsection{Définition des Angles Solides}
+
+La source émet des photons dans un cône de demi-angle $\theta = 60°$. L'angle solide correspondant est :
+
+\begin{equation}
+\Omega_{\text{cône}} = 2\pi(1 - \cos\theta) = 2\pi(1 - \cos 60°) = 2\pi \times 0.5 = \pi \text{ sr}
+\end{equation}
+
+La fraction de l'angle solide total ($4\pi$ sr) couverte par le cône est :
+
+\begin{equation}
+f_{\text{cône}} = \frac{\Omega_{\text{cône}}}{4\pi} = \frac{\pi}{4\pi} = 0.25 = 25\%
+\end{equation}
+
+\subsection{Visualisation du Cône et des Angles Solides}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.2]
+    % Source
+    \fill[source] (0,0) circle (0.1);
+    \node[below,font=\small] at (0,-0.2) {Source};
+    
+    % Cône principal (60°)
+    \fill[cone,opacity=0.15] (0,0) -- (8,4) arc (26.57:-26.57:8.94) -- cycle;
+    \draw[cone,thick] (0,0) -- (8,4);
+    \draw[cone,thick] (0,0) -- (8,-4);
+    
+    % Arc 60°
+    \draw[thick,->] (1.5,0) arc (0:26.57:1.5);
+    \node[font=\small] at (2,0.6) {$60°$};
+    
+    % Empilement billes (angle ~15.5°)
+    \fill[bismuth,opacity=0.2] (0,0) -- (8,2.2) arc (15.5:-15.5:8.3) -- cycle;
+    \draw[bismuth,thick,dashed] (0,0) -- (8,2.2);
+    \draw[bismuth,thick,dashed] (0,0) -- (8,-2.2);
+    \node[bismuth,font=\small] at (5,1.8) {Billes: $\sim 15.5°$};
+    
+    % Détecteur (angle ~6.3°)
+    \fill[water,opacity=0.3] (0,0) -- (8,0.89) arc (6.34:-6.34:8.05) -- cycle;
+    \draw[water,thick] (0,0) -- (8,0.89);
+    \draw[water,thick] (0,0) -- (8,-0.89);
+    \node[water,font=\small] at (6,-0.3) {Détecteur: $6.3°$};
+    
+    % Axe
+    \draw[->] (0,0) -- (9,0) node[right] {$z$};
+    
+    % Annotations
+    \draw[decorate,decoration={brace,amplitude=5pt,raise=2pt}] (8,4) -- (8,-4);
+    \node[right,font=\small] at (8.3,0) {$\Omega = \pi$ sr};
+    
+    % Légende
+    \node[font=\footnotesize,align=left] at (2,-3) {
+        \textcolor{cone}{$\blacksquare$} Cône 60° : $f = 25\%$\\
+        \textcolor{bismuth}{- -} Billes : $f \approx 1.81\%$\\
+        \textcolor{water}{—} Détecteur : $f = 0.31\%$
+    };
+    
+\end{tikzpicture}
+\caption{Visualisation des différents angles solides : cône d'émission (60°), couverture de l'empilement de billes ($\sim 15.5°$), et acceptance du détecteur ($\sim 6.3°$).}
+\label{fig:angles_solides}
+\end{figure}
+
+\subsection{Angle Solide de l'Empilement de Billes}
+
+L'empilement de billes occupe une cavité de $7.2 \times 7.2$ cm² située à $z = 4.65$ cm (centre). L'angle solide sous-tendu depuis la source ($z = 2$ cm) est :
+
+\begin{equation}
+\theta_{\text{billes}} = \arctan\left(\frac{3.6}{2.65}\right) \approx 53.7° \quad \text{(demi-diagonale)}
+\end{equation}
+
+Pour la dimension caractéristique (rayon équivalent $r = 3.6$ cm) :
+\begin{equation}
+\theta_{\text{billes}} \approx \arctan\left(\frac{3.6}{2.65}\right) \approx 53.7°
+\end{equation}
+
+La fraction d'angle solide correspondante :
+\begin{equation}
+f_{\text{billes}} = \frac{1 - \cos(53.7°)}{2} \approx 0.0181 = 1.81\%
+\end{equation}
+
+\subsection{Angle Solide du Détecteur}
+
+Le détecteur sphérique de rayon $r = 2$ cm est situé à une distance $d = 18$ cm de la source. Le demi-angle sous-tendu est :
+
+\begin{equation}
+\theta_{\text{det}} = \arctan\left(\frac{r}{d}\right) = \arctan\left(\frac{2}{18}\right) = 6.34°
+\end{equation}
+
+La fraction d'angle solide :
+\begin{equation}
+f_{\text{det}} = \frac{1 - \cos(6.34°)}{2} \approx 0.00306 = 0.306\%
+\end{equation}
+
+\subsection{Procédure de Normalisation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.5cm, auto,
+    block/.style={rectangle, draw, fill=blue!10, text width=5cm, text centered, rounded corners, minimum height=1cm},
+    arrow/.style={thick,->,>=stealth}]
+    
+    \node[block] (gen) {Génération\\$N$ événements dans cône 60°};
+    \node[block, below=of gen] (temps) {Temps simulé\\$t = N / A_{4\pi}$};
+    \node[block, below=of temps] (dose) {Dose brute\\$\dot{D}_{\text{brut}} = E_{\text{dep}} / (m \cdot t)$};
+    \node[block, below=of dose] (corr) {Correction géométrique\\$\dot{D}_{\text{réel}} = \dot{D}_{\text{brut}} \times f_{\text{cône}}$};
+    \node[block, below=of corr, fill=green!20] (final) {Dose finale\\$\dot{D} = \dot{D}_{\text{brut}} \times 0.25$};
+    
+    \draw[arrow] (gen) -- (temps);
+    \draw[arrow] (temps) -- (dose);
+    \draw[arrow] (dose) -- (corr);
+    \draw[arrow] (corr) -- (final);
+    
+    % Annotations
+    \node[right=0.5cm of temps, font=\small] {$A_{4\pi} = 44$ kBq};
+    \node[right=0.5cm of corr, font=\small] {$f_{\text{cône}} = 0.25$};
+    
+\end{tikzpicture}
+\caption{Procédure de normalisation pour le calcul du débit de dose.}
+\label{fig:normalisation}
+\end{figure}
+
+Les formules de normalisation sont :
+
+\begin{align}
+t_{\text{simulé}} &= \frac{N_{\text{events}}}{A_{4\pi}} = \frac{25 \times 10^6}{44000} = 568.18 \text{ s} \\[0.3cm]
+\dot{D}_{\text{brut}} &= \frac{E_{\text{déposée}}}{m_{\text{det}} \times t_{\text{simulé}}} \\[0.3cm]
+\dot{D}_{\text{corrigé}} &= \dot{D}_{\text{brut}} \times f_{\text{cône}} = \dot{D}_{\text{brut}} \times 0.25
+\end{align}
+
+%=============================================================================
+\section{Bilan des Particules}
+%=============================================================================
+
+\subsection{Statistiques de Génération}
+
+\begin{table}[H]
+\centering
+\caption{Statistiques de génération des gammas (25M événements)}
+\label{tab:generation}
+\begin{tabular}{lrl}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur} & \textbf{Commentaire} \\
+\midrule
+Événements simulés & 25,000,000 & — \\
+Gammas générés & 48,099,889 & — \\
+Moyenne $\gamma$/événement & 1.924 & Attendu : 1.924 ✓ \\
+Événements sans gamma & $\sim 11\%$ & $P(N=0) \approx 11.7\%$ ✓ \\
+\midrule
+Temps simulé & 568.18 s & $t = N/A_{4\pi}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Bilan de Transmission}
+
+\begin{table}[H]
+\centering
+\caption{Bilan de transmission à travers la plaque W/PETG}
+\label{tab:transmission}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Catégorie} & \textbf{Nombre} & \textbf{Pourcentage} \\
+\midrule
+Gammas générés (total) & 48,099,889 & 100\% \\
+\midrule
+Gammas transmis & 8,960,192 & 18.63\% \\
+Gammas absorbés & 36,132,636 & 75.12\% \\
+Hors acceptance (MISSED) & $\sim 3,007,061$ & $\sim 6.25\%$ \\
+\midrule
+Gammas dans détecteur & 180,750 & 0.376\% \\
+Événements avec dépôt & 34,923 & — \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Visualisation du Bilan Particulaire}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Barre pour gammas générés
+    \fill[blue!60] (0,0) rectangle (12,0.8);
+    \node[white,font=\small] at (6,0.4) {Gammas générés : 48.1M (100\%)};
+    
+    % Barre pour transmission
+    \fill[red!60] (0,-1.2) rectangle (9.03,-0.4);
+    \node[white,font=\small] at (4.5,-0.8) {Absorbés : 75.1\%};
+    
+    \fill[green!60] (9.03,-1.2) rectangle (11.24,-0.4);
+    \node[white,font=\tiny] at (10.1,-0.8) {Trans. 18.6\%};
+    
+    \fill[gray!40] (11.24,-1.2) rectangle (12,-0.4);
+    
+    % Barre pour détecteur
+    \fill[gray!30] (0,-2.4) rectangle (11.55,-1.6);
+    \fill[water] (11.55,-2.4) rectangle (12,-1.6);
+    \node[font=\tiny] at (11.77,-2) {0.38\%};
+    \node[font=\small] at (5,-2) {Hors détecteur : 99.62\%};
+    
+    % Labels
+    \node[left,font=\small] at (-0.2,0.4) {Génération};
+    \node[left,font=\small] at (-0.2,-0.8) {Plaque};
+    \node[left,font=\small] at (-0.2,-2) {Détecteur};
+    
+    % Flèches
+    \draw[->,thick] (6,-0.1) -- (6,-0.35);
+    \draw[->,thick] (6,-1.3) -- (6,-1.55);
+    
+\end{tikzpicture}
+\caption{Bilan des particules : de la génération au détecteur.}
+\label{fig:bilan_particules}
+\end{figure}
+
+%=============================================================================
+\section{Résultats de Dose}
+%=============================================================================
+
+\subsection{Méthodes de Calcul}
+
+Trois méthodes sont utilisées pour calculer le débit de dose :
+
+\begin{enumerate}
+    \item \textbf{Méthode 1 (Monte Carlo direct)} : Somme des dépôts d'énergie dans le volume sensible
+    \item \textbf{Méthode 1bis (Forçage)} : Estimation du dépôt forcé pour chaque gamma traversant
+    \item \textbf{Méthode 2 (Fluence × $\mu_{en}/\rho$)} : Calcul analytique basé sur la fluence
+\end{enumerate}
+
+\subsection{Résultats W/PETG Pleine (25M événements)}
+
+\begin{table}[H]
+\centering
+\caption{Résultats de dose pour la configuration W/PETG pleine}
+\label{tab:dose_wpetg}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Méthode} & \textbf{Dose (nGy/h)} & \textbf{Incertitude} & \textbf{\% incert.} \\
+\midrule
+Méthode 1 (MC) & 96.72 & $\pm 0.68$ & 0.70\% \\
+Méthode 1bis (Forçage) & 102.03 & $\pm 0.24$ & 0.24\% \\
+Méthode 2 (Fluence) & 102.03 & $\pm 0.24$ & 0.24\% \\
+\midrule
+\textbf{Valeur retenue} & \textbf{102.0} & $\pm 0.2$ & 0.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparaison des Trois Configurations}
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des configurations de blindage}
+\label{tab:comparaison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Configuration} & \textbf{Transmission} & \textbf{Dose (nGy/h)} & \textbf{Réduction} & \textbf{Facteur} \\
+\midrule
+AIR (référence) & 97.9\% & $179.2 \pm 1.2$ & — & 1.00 \\
+Bi/PETG (billes) & 17.1\% & $94.4 \pm 0.2$ & 47\% & 1.90 \\
+W/PETG (pleine) & 18.6\% & $102.0 \pm 0.2$ & 43\% & 1.76 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+    % Axes
+    \draw[->] (0,0) -- (0,10) node[above] {Dose (nGy/h)};
+    \draw[->] (0,0) -- (12,0);
+    
+    % Échelle Y
+    \foreach \y in {0,50,100,150,200} {
+        \pgfmathsetmacro{\ypos}{\y/20}
+        \draw (-0.1,\ypos) -- (0.1,\ypos);
+        \node[left,font=\small] at (-0.2,\ypos) {\y};
+    }
+    
+    % Barres
+    \fill[air] (1,0) rectangle (3,8.96);
+    \node[font=\small,rotate=90] at (2,4.5) {AIR : 179.2};
+    
+    \fill[bismuth] (5,0) rectangle (7,4.72);
+    \node[font=\small,rotate=90] at (6,2.4) {Bi/PETG : 94.4};
+    
+    \fill[wpetg] (9,0) rectangle (11,5.1);
+    \node[font=\small,rotate=90] at (10,2.6) {W/PETG : 102.0};
+    
+    % Labels
+    \node[font=\small] at (2,-0.5) {Référence};
+    \node[font=\small] at (6,-0.5) {Billes Bi};
+    \node[font=\small] at (10,-0.5) {Plaque W};
+    
+    % Ligne de référence
+    \draw[dashed,gray] (0,8.96) -- (12,8.96);
+    
+    % Facteurs de réduction
+    \draw[<->,thick,red] (7.2,4.72) -- (7.2,8.96);
+    \node[red,font=\small,right] at (7.3,6.8) {$\times 1.9$};
+    
+    \draw[<->,thick,red] (11.2,5.1) -- (11.2,8.96);
+    \node[red,font=\small,right] at (11.3,7) {$\times 1.76$};
+    
+\end{tikzpicture}
+\caption{Comparaison des débits de dose pour les trois configurations.}
+\label{fig:comparaison_dose}
+\end{figure}
+
+%=============================================================================
+\section{Analyse et Discussion}
+%=============================================================================
+
+\subsection{Efficacité du Blindage W/PETG}
+
+La plaque W/PETG pleine de 18 mm (masse surfacique 7.64 g/cm²) présente :
+
+\begin{itemize}
+    \item Une \textbf{transmission de 18.6\%} (absorption de 81.4\% des gammas)
+    \item Une \textbf{réduction de dose de 43\%} par rapport à l'air
+    \item Un \textbf{facteur de réduction de 1.76}
+\end{itemize}
+
+\subsection{Comparaison avec Bi/PETG}
+
+Malgré des transmissions similaires (18.6\% vs 17.1\%), la configuration W/PETG donne une dose \textbf{légèrement supérieure} (+8\%) à la configuration Bi/PETG. Cela s'explique par :
+
+\begin{enumerate}
+    \item \textbf{Différence de numéro atomique} : $Z_{\text{Bi}} = 83 > Z_{\text{W}} = 74$
+    \item \textbf{Section efficace photoélectrique} : $\sigma_{\text{PE}} \propto Z^{4-5}$
+    \item \textbf{Spectre durci différent} : Le bismuth absorbe plus efficacement les basses énergies
+    \item \textbf{Géométrie} : La plaque pleine vs les billes avec gaps d'air
+\end{enumerate}
+
+\subsection{Cohérence des Résultats}
+
+\begin{table}[H]
+\centering
+\caption{Vérification de cohérence}
+\label{tab:coherence}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Paramètre} & \textbf{Observé} & \textbf{Attendu} \\
+\midrule
+Moyenne $\gamma$/event & 1.924 & 1.924 ✓ \\
+P(N=0) & 11.0\% & 11.7\% ✓ \\
+Accord méthodes 1bis/2 & 102.03 / 102.03 & Identique ✓ \\
+Écart méthode 1 vs 1bis & 5.2\% & $< 10\%$ ✓ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%=============================================================================
+\section{Conclusion}
+%=============================================================================
+
+Cette étude par simulation Monte Carlo Geant4 a permis de caractériser l'efficacité d'une plaque W/PETG pleine de 18 mm comme blindage contre le rayonnement gamma de l'Eu-152.
+
+\subsection{Résultats Principaux}
+
+\begin{itemize}
+    \item \textbf{Débit de dose} : $\dot{D} = 102.0 \pm 0.2$ nGy/h (à 18 cm de la source)
+    \item \textbf{Facteur de réduction} : 1.76 par rapport à l'air
+    \item \textbf{Transmission} : 18.6\% des gammas traversent la plaque
+\end{itemize}
+
+\subsection{Comparaison des Blindages}
+
+\begin{center}
+\begin{tabular}{ccc}
+\textbf{Bi/PETG (billes)} & vs & \textbf{W/PETG (pleine)} \\
+$94.4$ nGy/h & & $102.0$ nGy/h \\
+Facteur 1.90 & & Facteur 1.76 \\
+\end{tabular}
+\end{center}
+
+Le blindage Bi/PETG avec billes reste \textbf{légèrement plus efficace} (+8\%) que la plaque W/PETG pleine, malgré des masses surfaciques comparables (8.12 vs 7.64 g/cm²).
+
+\subsection{Validation}
+
+Les résultats sont validés par :
+\begin{itemize}
+    \item L'accord entre les trois méthodes de calcul ($< 6\%$)
+    \item La cohérence des statistiques de génération
+    \item Une incertitude statistique faible (0.2\%) grâce aux 25M événements
+\end{itemize}
+
+\end{document}
